@@ -1,111 +1,100 @@
-<!DOCTYPE html>
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+?><!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Search Landing Page</title>
-    <!-- Bootstrap CSS -->
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    />
-    <!-- Custom CSS -->
-    <style>
-      body {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        background-color: #f5f5f5; /* Light gray background color */
-      }
+<head>
+	<meta charset="utf-8">
+	<title>Welcome to CodeIgniter</title>
 
-      /* Center the search box and results list */
-      .search-container {
-        flex: 4; /* Take 3/4 of the available height */
-        display: flex;
-        align-items: center;
-        justify-content: start;
-        flex-direction: column;
-      }
+	<style type="text/css">
 
-      .search-box {
-        max-width: 400px; /* Set a maximum width for the search box */
-        width: 100%;
-        background-color: #fff; /* White background for the search box */
-        padding: 15px;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
-      }
+	::selection { background-color: #E13300; color: white; }
+	::-moz-selection { background-color: #E13300; color: white; }
 
-      /* Increase the height of the search input */
-      .search-box input[type="text"] {
-        height: 50px; /* Set the height for the search input */
-      }
+	body {
+		background-color: #fff;
+		margin: 40px;
+		font: 13px/20px normal Helvetica, Arial, sans-serif;
+		color: #4F5155;
+	}
 
-      /* Fix the footer at the bottom */
-      .footer {
-        flex-shrink: 0;
-        padding: 10px 0;
-        background-color: #fff;
-        box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1); /* Add a shadow at the top */
-      }
+	a {
+		color: #003399;
+		background-color: transparent;
+		font-weight: normal;
+		text-decoration: none;
+	}
 
-      .results-list {
-        flex: 1; /* Take the remaining 1/4 of the available height */
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-      }
-      .three-times-height {
-        height: 300%;
-      }
-    </style>
-  </head>
+	a:hover {
+		color: #97310e;
+	}
 
-  <body>
-    <!-- Navigation bar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="#">Search Landing</a>
-      <!-- Add additional navigation items if needed -->
-    </nav>
+	h1 {
+		color: #444;
+		background-color: transparent;
+		border-bottom: 1px solid #D0D0D0;
+		font-size: 19px;
+		font-weight: normal;
+		margin: 0 0 14px 0;
+		padding: 14px 15px 10px 15px;
+	}
 
-    <!-- Main content -->
-    <div class="search-container">
-      <div class="p-5"><h1>Hello World11</h1></div>
-      <div class="search-box mb-4">
-        <div class="input-group">
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Enter your search term here"
-            aria-label="Search term"
-            aria-describedby="search-btn"
-          />
-          <div class="input-group-append">
-            <button class="btn btn-primary" type="button" id="search-btn">
-              Search
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+	code {
+		font-family: Consolas, Monaco, Courier New, Courier, monospace;
+		font-size: 12px;
+		background-color: #f9f9f9;
+		border: 1px solid #D0D0D0;
+		color: #002166;
+		display: block;
+		margin: 14px 0 14px 0;
+		padding: 12px 10px 12px 10px;
+	}
 
-    <!-- Results list goes here -->
-    <div class="results-list">
-      <!-- Your results content will go here -->fdgdfgdfg
-    </div>
+	#body {
+		margin: 0 15px 0 15px;
+		min-height: 96px;
+	}
 
-    <!-- Footer -->
-    <footer class="footer bg-light mt-4">
-      <div class="container text-center">
-        <span class="text-muted"
-          >Search Landing &copy; 2023. All rights reserved.</span
-        >
-      </div>
-    </footer>
+	p {
+		margin: 0 0 10px;
+		padding:0;
+	}
 
-    <!-- Bootstrap JS (Make sure to include jQuery and Popper.js before Bootstrap) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  </body>
+	p.footer {
+		text-align: right;
+		font-size: 11px;
+		border-top: 1px solid #D0D0D0;
+		line-height: 32px;
+		padding: 0 10px 0 10px;
+		margin: 20px 0 0 0;
+	}
+
+	#container {
+		margin: 10px;
+		border: 1px solid #D0D0D0;
+		box-shadow: 0 0 8px #D0D0D0;
+	}
+	</style>
+</head>
+<body>
+
+<div id="container">
+	<h1>Welcome to CodeIgniter!</h1>
+
+	<div id="body">
+		<p>The page you are looking at is being generated dynamically by CodeIgniter.</p>
+
+		<p>If you would like to edit this page you'll find it located at:</p>
+		<code>application/views/welcome_message.php</code>
+
+		<p>The corresponding controller for this page is found at:</p>
+		<code>application/controllers/Welcome.php</code>
+
+		<p>If you are exploring CodeIgniter for the very first time, you should start by reading the <a href="userguide3/">User Guide</a>.</p>
+	</div>
+
+	<p class="footer">Page rendered in <strong>{elapsed_time}</strong> seconds. <?php echo  (ENVIRONMENT === 'development') ?  'CodeIgniter Version <strong>' . CI_VERSION . '</strong>' : '' ?></p>
+</div>
+
+</body>
 </html>
