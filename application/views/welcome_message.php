@@ -108,7 +108,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		for ($i = $startItem; $i < min($startItem + $itemsPerPage, $totalItems); $i++) {
 			$sampleData[] = array(
 			'id' => $i + 1,
-			'name' => 'Sample Item ' . ($i + 1),
+			'name' => 'Sample Full Name ' . ($i + 1),
 			);
 		}
 
@@ -121,6 +121,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			echo '<tr>';
 			echo '<td>' . $item['id'] . '</td>';
 			echo '<td>' . $item['name'] . '</td>';
+			echo '<td><button class="btn btn-info" onclick="showInfoCard(' . $item['id'] . ')">View Information Card</button></td>';
 			echo '</tr>';
 			}
 			echo '</tbody></table>';
