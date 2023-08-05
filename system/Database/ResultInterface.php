@@ -11,11 +11,8 @@
 
 namespace CodeIgniter\Database;
 
-use stdClass;
-
 /**
- * @template TConnection
- * @template TResult
+ * Interface ResultInterface
  */
 interface ResultInterface
 {
@@ -33,7 +30,7 @@ interface ResultInterface
      *
      * @param string $className The name of the class to use.
      *
-     * @return array
+     * @return mixed
      */
     public function getCustomResultObject(string $className);
 
@@ -57,11 +54,10 @@ interface ResultInterface
      *
      * If row doesn't exist, returns null.
      *
-     * @param int    $n    The index of the results to return
+     * @param mixed  $n    The index of the results to return
      * @param string $type The type of result object. 'array', 'object' or class name.
      *
-     * @return array|object|stdClass|null
-     * @phpstan-return ($type is 'object' ? stdClass|null : ($type is 'array' ? array|null : object|null))
+     * @return mixed
      */
     public function getRow($n = 0, string $type = 'object');
 
@@ -70,7 +66,7 @@ interface ResultInterface
      *
      * If row doesn't exists, returns null.
      *
-     * @return array|null
+     * @return mixed
      */
     public function getCustomRowObject(int $n, string $className);
 
@@ -79,7 +75,7 @@ interface ResultInterface
      *
      * If row doesn't exist, returns null.
      *
-     * @return array|null
+     * @return mixed
      */
     public function getRowArray(int $n = 0);
 
@@ -88,57 +84,52 @@ interface ResultInterface
      *
      * If row doesn't exist, returns null.
      *
-     * @return object|stdClass|null
+     * @return mixed
      */
     public function getRowObject(int $n = 0);
 
     /**
      * Assigns an item into a particular column slot.
      *
-     * @param array|string               $key
-     * @param array|object|stdClass|null $value
+     * @param string $key
+     * @param mixed  $value
      *
-     * @return void
+     * @return mixed
      */
     public function setRow($key, $value = null);
 
     /**
      * Returns the "first" row of the current results.
      *
-     * @return array|object|null
+     * @return mixed
      */
     public function getFirstRow(string $type = 'object');
 
     /**
      * Returns the "last" row of the current results.
      *
-     * @return array|object|null
+     * @return mixed
      */
     public function getLastRow(string $type = 'object');
 
     /**
      * Returns the "next" row of the current results.
      *
-     * @return array|object|null
+     * @return mixed
      */
     public function getNextRow(string $type = 'object');
 
     /**
      * Returns the "previous" row of the current results.
      *
-     * @return array|object|null
+     * @return mixed
      */
     public function getPreviousRow(string $type = 'object');
 
     /**
-     * Returns number of rows in the result set.
-     */
-    public function getNumRows(): int;
-
-    /**
      * Returns an unbuffered row and move the pointer to the next row.
      *
-     * @return array|object|null
+     * @return mixed
      */
     public function getUnbufferedRow(string $type = 'object');
 
@@ -167,7 +158,7 @@ interface ResultInterface
      * internally before fetching results to make sure the result set
      * starts at zero.
      *
-     * @return bool
+     * @return mixed
      */
     public function dataSeek(int $n = 0);
 }

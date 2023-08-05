@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * The MIT License (MIT)
  *
@@ -30,25 +28,36 @@ namespace Kint\Renderer;
 use Kint\Zval\InstanceValue;
 use Kint\Zval\Value;
 
-/**
- * @psalm-type PluginMap array<string, class-string>
- *
- * @psalm-consistent-constructor
- */
-abstract class AbstractRenderer implements RendererInterface
+abstract class Renderer
 {
-    public const SORT_NONE = 0;
-    public const SORT_VISIBILITY = 1;
-    public const SORT_FULL = 2;
+    const SORT_NONE = 0;
+    const SORT_VISIBILITY = 1;
+    const SORT_FULL = 2;
 
     protected $call_info = [];
     protected $statics = [];
     protected $show_trace = true;
 
-    public function setCallInfo(array $info): void
+    abstract public function render(Value $o);
+
+    abstract public function renderNothing();
+
+    public function setCallInfo(array $info)
     {
+        if (!isset($info['params'])) {
+            $info['params'] = null;
+        }
+
         if (!isset($info['modifiers']) || !\is_array($info['modifiers'])) {
             $info['modifiers'] = [];
+        }
+
+        if (!isset($info['callee'])) {
+            $info['callee'] = null;
+        }
+
+        if (!isset($info['caller'])) {
+            $info['caller'] = null;
         }
 
         if (!isset($info['trace']) || !\is_array($info['trace'])) {
@@ -56,64 +65,49 @@ abstract class AbstractRenderer implements RendererInterface
         }
 
         $this->call_info = [
-            'params' => $info['params'] ?? null,
+            'params' => $info['params'],
             'modifiers' => $info['modifiers'],
-            'callee' => $info['callee'] ?? null,
-            'caller' => $info['caller'] ?? null,
+            'callee' => $info['callee'],
+            'caller' => $info['caller'],
             'trace' => $info['trace'],
         ];
     }
 
-    public function getCallInfo(): array
+    public function getCallInfo()
     {
         return $this->call_info;
     }
 
-    public function setStatics(array $statics): void
+    public function setStatics(array $statics)
     {
         $this->statics = $statics;
         $this->setShowTrace(!empty($statics['display_called_from']));
     }
 
-    public function getStatics(): array
+    public function getStatics()
     {
         return $this->statics;
     }
 
-    public function setShowTrace(bool $show_trace): void
+    public function setShowTrace($show_trace)
     {
         $this->show_trace = $show_trace;
     }
 
-    public function getShowTrace(): bool
+    public function getShowTrace()
     {
         return $this->show_trace;
-    }
-
-    public function filterParserPlugins(array $plugins): array
-    {
-        return $plugins;
-    }
-
-    public function preRender(): string
-    {
-        return '';
-    }
-
-    public function postRender(): string
-    {
-        return '';
     }
 
     /**
      * Returns the first compatible plugin available.
      *
-     * @psalm-param PluginMap $plugins Array of hints to class strings
-     * @psalm-param string[] $hints Array of object hints
+     * @param array $plugins Array of hints to class strings
+     * @param array $hints   Array of object hints
      *
-     * @psalm-return PluginMap Array of hints to class strings filtered and sorted by object hints
+     * @return array Array of hints to class strings filtered and sorted by object hints
      */
-    public function matchPlugins(array $plugins, array $hints): array
+    public function matchPlugins(array $plugins, array $hints)
     {
         $out = [];
 
@@ -126,7 +120,22 @@ abstract class AbstractRenderer implements RendererInterface
         return $out;
     }
 
-    public static function sortPropertiesFull(Value $a, Value $b): int
+    public function filterParserPlugins(array $plugins)
+    {
+        return $plugins;
+    }
+
+    public function preRender()
+    {
+        return '';
+    }
+
+    public function postRender()
+    {
+        return '';
+    }
+
+    public static function sortPropertiesFull(Value $a, Value $b)
     {
         $sort = Value::sortByAccess($a, $b);
         if ($sort) {
@@ -145,10 +154,11 @@ abstract class AbstractRenderer implements RendererInterface
      * Sorts an array of Value.
      *
      * @param Value[] $contents Object properties to sort
+     * @param int     $sort
      *
      * @return Value[]
      */
-    public static function sortProperties(array $contents, int $sort): array
+    public static function sortProperties(array $contents, $sort)
     {
         switch ($sort) {
             case self::SORT_VISIBILITY:
@@ -166,7 +176,7 @@ abstract class AbstractRenderer implements RendererInterface
 
                 return \call_user_func_array('array_merge', $containers);
             case self::SORT_FULL:
-                \usort($contents, [self::class, 'sortPropertiesFull']);
+                \usort($contents, ['Kint\\Renderer\\Renderer', 'sortPropertiesFull']);
                 // no break
             default:
                 return $contents;

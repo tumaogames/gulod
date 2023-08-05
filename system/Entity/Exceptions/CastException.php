@@ -12,18 +12,12 @@
 namespace CodeIgniter\Entity\Exceptions;
 
 use CodeIgniter\Exceptions\FrameworkException;
-use CodeIgniter\Exceptions\HasExitCodeInterface;
 
 /**
  * CastException is thrown for invalid cast initialization and management.
  */
-class CastException extends FrameworkException implements HasExitCodeInterface
+class CastException extends FrameworkException
 {
-    public function getExitCode(): int
-    {
-        return EXIT_CONFIG;
-    }
-
     /**
      * Thrown when the cast class does not extends BaseCast.
      *

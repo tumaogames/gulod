@@ -14,7 +14,6 @@ namespace CodeIgniter\Test\Mock;
 use Closure;
 use CodeIgniter\Cache\CacheInterface;
 use CodeIgniter\Cache\Handlers\BaseHandler;
-use CodeIgniter\I18n\Time;
 use PHPUnit\Framework\Assert;
 
 class MockCache extends BaseHandler implements CacheInterface
@@ -101,7 +100,7 @@ class MockCache extends BaseHandler implements CacheInterface
         $key = static::validateKey($key, $this->prefix);
 
         $this->cache[$key]       = $value;
-        $this->expirations[$key] = $ttl > 0 ? Time::now()->getTimestamp() + $ttl : null;
+        $this->expirations[$key] = $ttl > 0 ? time() + $ttl : null;
 
         return true;
     }
@@ -222,7 +221,7 @@ class MockCache extends BaseHandler implements CacheInterface
         }
 
         // Count expired items as a miss
-        if (is_int($this->expirations[$key]) && $this->expirations[$key] > Time::now()->getTimestamp()) {
+        if (is_int($this->expirations[$key]) && $this->expirations[$key] > time()) {
             return null;
         }
 
@@ -237,9 +236,9 @@ class MockCache extends BaseHandler implements CacheInterface
         return true;
     }
 
-    // --------------------------------------------------------------------
+    //--------------------------------------------------------------------
     // Test Helpers
-    // --------------------------------------------------------------------
+    //--------------------------------------------------------------------
 
     /**
      * Instructs the class to ignore all
@@ -256,9 +255,9 @@ class MockCache extends BaseHandler implements CacheInterface
         return $this;
     }
 
-    // --------------------------------------------------------------------
+    //--------------------------------------------------------------------
     // Additional Assertions
-    // --------------------------------------------------------------------
+    //--------------------------------------------------------------------
 
     /**
      * Asserts that the cache has an item named $key.

@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * The MIT License (MIT)
  *
@@ -30,10 +28,7 @@ namespace Kint\Renderer\Text;
 use Kint\Renderer\TextRenderer;
 use Kint\Zval\Value;
 
-/**
- * @psalm-consistent-constructor
- */
-abstract class AbstractPlugin implements PluginInterface
+abstract class Plugin
 {
     protected $renderer;
 
@@ -42,22 +37,8 @@ abstract class AbstractPlugin implements PluginInterface
         $this->renderer = $r;
     }
 
-    public function renderLockedHeader(Value $o, ?string $content = null): string
-    {
-        $out = '';
-
-        if (0 == $o->depth) {
-            $out .= $this->renderer->colorTitle($this->renderer->renderTitle($o)).PHP_EOL;
-        }
-
-        $out .= $this->renderer->renderHeader($o);
-
-        if (null !== $content) {
-            $out .= ' '.$this->renderer->colorValue($content);
-        }
-
-        $out .= PHP_EOL;
-
-        return $out;
-    }
+    /**
+     * @return null|string
+     */
+    abstract public function render(Value $o);
 }

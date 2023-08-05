@@ -172,9 +172,9 @@ abstract class BaseHandler implements ImageHandlerInterface
     /**
      * Verifies that a file has been supplied and it is an image.
      *
-     * @return Image The image instance
-     *
      * @throws ImageException
+     *
+     * @return Image The image instance
      */
     protected function image(): Image
     {
@@ -296,8 +296,6 @@ abstract class BaseHandler implements ImageHandlerInterface
      */
     public function convert(int $imageType)
     {
-        $this->ensureResource();
-
         $this->image()->imageType = $imageType;
 
         return $this;
@@ -503,9 +501,9 @@ abstract class BaseHandler implements ImageHandlerInterface
      * @param string|null $key    If specified, will only return this piece of EXIF data.
      * @param bool        $silent If true, will not throw our own exceptions.
      *
-     * @return mixed
-     *
      * @throws ImageException
+     *
+     * @return mixed
      */
     public function getEXIF(?string $key = null, bool $silent = false)
     {

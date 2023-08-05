@@ -15,10 +15,8 @@ use CodeIgniter\Cookie\Cookie;
 use CodeIgniter\Cookie\CookieStore;
 use CodeIgniter\Cookie\Exceptions\CookieException;
 use CodeIgniter\HTTP\Exceptions\HTTPException;
-use CodeIgniter\I18n\Time;
 use CodeIgniter\Pager\PagerInterface;
 use CodeIgniter\Security\Exceptions\SecurityException;
-use Config\Cookie as CookieConfig;
 use Config\Services;
 use DateTime;
 use DateTimeZone;
@@ -30,6 +28,8 @@ use InvalidArgumentException;
  * Additional methods to make a PSR-7 Response class
  * compliant with the framework's own ResponseInterface.
  *
+ * @property array $statusCodes
+ *
  * @see https://github.com/php-fig/http-message/blob/master/src/ResponseInterface.php
  */
 trait ResponseTrait
@@ -38,8 +38,6 @@ trait ResponseTrait
      * Whether Content Security Policy is being enforced.
      *
      * @var bool
-     *
-     * @deprecated Use $this->CSP->enabled() instead.
      */
     protected $CSPEnabled = false;
 
@@ -47,8 +45,6 @@ trait ResponseTrait
      * Content security policy handler
      *
      * @var ContentSecurityPolicy
-     *
-     * @deprecated Will be protected. Use `getCSP()` instead.
      */
     public $CSP;
 
@@ -144,9 +140,9 @@ trait ResponseTrait
      *                       provided status code; if none is provided, will
      *                       default to the IANA name.
      *
-     * @return $this
-     *
      * @throws HTTPException For invalid status code arguments.
+     *
+     * @return $this
      */
     public function setStatusCode(int $code, string $reason = '')
     {
@@ -167,14 +163,14 @@ trait ResponseTrait
         return $this;
     }
 
-    // --------------------------------------------------------------------
+    //--------------------------------------------------------------------
     // Convenience Methods
-    // --------------------------------------------------------------------
+    //--------------------------------------------------------------------
 
     /**
      * Sets the date header
      *
-     * @return $this
+     * @return Response
      */
     public function setDate(DateTime $date)
     {
@@ -190,7 +186,7 @@ trait ResponseTrait
      *
      * @see http://tools.ietf.org/html/rfc5988
      *
-     * @return $this
+     * @return Response
      *
      * @todo Recommend moving to Pager
      */
@@ -221,7 +217,7 @@ trait ResponseTrait
      * Sets the Content Type header for this response with the mime type
      * and, optionally, the charset.
      *
-     * @return $this
+     * @return Response
      */
     public function setContentType(string $mime, string $charset = 'UTF-8')
     {
@@ -239,7 +235,7 @@ trait ResponseTrait
     /**
      * Converts the $body into JSON and sets the Content Type header.
      *
-     * @param array|object|string $body
+     * @param array|string $body
      *
      * @return $this
      */
@@ -253,9 +249,9 @@ trait ResponseTrait
     /**
      * Returns the current body, converted to JSON is it isn't already.
      *
-     * @return string|null
-     *
      * @throws InvalidArgumentException If the body property is not array.
+     *
+     * @return mixed|string
      */
     public function getJSON()
     {
@@ -285,9 +281,9 @@ trait ResponseTrait
     /**
      * Retrieves the current body into XML and returns it.
      *
-     * @return bool|string|null
-     *
      * @throws InvalidArgumentException If the body property is not array.
+     *
+     * @return mixed|string
      */
     public function getXML()
     {
@@ -301,15 +297,15 @@ trait ResponseTrait
     }
 
     /**
-     * Handles conversion of the data into the appropriate format,
+     * Handles conversion of the of the data into the appropriate format,
      * and sets the correct Content-Type header for our response.
      *
-     * @param array|object|string $body
-     * @param string              $format Valid: json, xml
-     *
-     * @return false|string
+     * @param array|string $body
+     * @param string       $format Valid: json, xml
      *
      * @throws InvalidArgumentException If the body property is not string or array.
+     *
+     * @return mixed
      */
     protected function formatBody($body, string $format)
     {
@@ -325,17 +321,17 @@ trait ResponseTrait
         return $body;
     }
 
-    // --------------------------------------------------------------------
+    //--------------------------------------------------------------------
     // Cache Control Methods
     //
     // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9
-    // --------------------------------------------------------------------
+    //--------------------------------------------------------------------
 
     /**
      * Sets the appropriate headers to ensure this response
      * is not cached by the browsers.
      *
-     * @return $this
+     * @return Response
      *
      * @todo Recommend researching these directives, might need: 'private', 'no-transform', 'no-store', 'must-revalidate'
      *
@@ -343,8 +339,8 @@ trait ResponseTrait
      */
     public function noCache()
     {
-        $this->removeHeader('Cache-Control');
-        $this->setHeader('Cache-Control', ['no-store', 'max-age=0', 'no-cache']);
+        $this->removeHeader('Cache-control');
+        $this->setHeader('Cache-control', ['no-store', 'max-age=0', 'no-cache']);
 
         return $this;
     }
@@ -373,7 +369,7 @@ trait ResponseTrait
      *  - proxy-revalidate
      *  - no-transform
      *
-     * @return $this
+     * @return Response
      */
     public function setCache(array $options = [])
     {
@@ -397,7 +393,7 @@ trait ResponseTrait
             unset($options['last-modified']);
         }
 
-        $this->setHeader('Cache-Control', $options);
+        $this->setHeader('Cache-control', $options);
 
         return $this;
     }
@@ -410,7 +406,7 @@ trait ResponseTrait
      *
      * @param DateTime|string $date
      *
-     * @return $this
+     * @return Response
      */
     public function setLastModified($date)
     {
@@ -424,20 +420,20 @@ trait ResponseTrait
         return $this;
     }
 
-    // --------------------------------------------------------------------
+    //--------------------------------------------------------------------
     // Output Methods
-    // --------------------------------------------------------------------
+    //--------------------------------------------------------------------
 
     /**
      * Sends the output to the browser.
      *
-     * @return $this
+     * @return Response
      */
     public function send()
     {
         // If we're enforcing a Content Security Policy,
         // we need to give it a chance to build out it's headers.
-        if ($this->CSP->enabled()) {
+        if ($this->CSPEnabled === true) {
             $this->CSP->finalize($this);
         } else {
             $this->body = str_replace(['{csp-style-nonce}', '{csp-script-nonce}'], '', $this->body ?? '');
@@ -453,7 +449,7 @@ trait ResponseTrait
     /**
      * Sends the headers of this HTTP response to the browser.
      *
-     * @return $this
+     * @return Response
      */
     public function sendHeaders()
     {
@@ -465,14 +461,14 @@ trait ResponseTrait
         // Per spec, MUST be sent with each request, if possible.
         // http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html
         if (! isset($this->headers['Date']) && PHP_SAPI !== 'cli-server') {
-            $this->setDate(DateTime::createFromFormat('U', (string) Time::now()->getTimestamp()));
+            $this->setDate(DateTime::createFromFormat('U', (string) time()));
         }
 
         // HTTP Status
-        header(sprintf('HTTP/%s %s %s', $this->getProtocolVersion(), $this->getStatusCode(), $this->getReasonPhrase()), true, $this->getStatusCode());
+        header(sprintf('HTTP/%s %s %s', $this->getProtocolVersion(), $this->getStatusCode(), $this->getReason()), true, $this->getStatusCode());
 
         // Send all of our headers
-        foreach (array_keys($this->headers()) as $name) {
+        foreach (array_keys($this->getHeaders()) as $name) {
             header($name . ': ' . $this->getHeaderLine($name), false, $this->getStatusCode());
         }
 
@@ -482,7 +478,7 @@ trait ResponseTrait
     /**
      * Sends the Body of the message to the browser.
      *
-     * @return $this
+     * @return Response
      */
     public function sendBody()
     {
@@ -494,41 +490,29 @@ trait ResponseTrait
     /**
      * Perform a redirect to a new URL, in two flavors: header or location.
      *
-     * @param string   $uri  The URI to redirect to
-     * @param int|null $code The type of redirection, defaults to 302
-     *
-     * @return $this
+     * @param string $uri  The URI to redirect to
+     * @param int    $code The type of redirection, defaults to 302
      *
      * @throws HTTPException For invalid status code.
+     *
+     * @return $this
      */
     public function redirect(string $uri, string $method = 'auto', ?int $code = null)
     {
-        // IIS environment likely? Use 'refresh' for better compatibility
-        if (
-            $method === 'auto'
-            && isset($_SERVER['SERVER_SOFTWARE'])
-            && strpos($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS') !== false
-        ) {
-            $method = 'refresh';
-        } elseif ($method !== 'refresh' && $code === null) {
-            // override status code for HTTP/1.1 & higher
-            if (
-                isset($_SERVER['SERVER_PROTOCOL'], $_SERVER['REQUEST_METHOD'])
-                && $this->getProtocolVersion() >= 1.1
-            ) {
-                if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-                    $code = 302;
-                } elseif (in_array($_SERVER['REQUEST_METHOD'], ['POST', 'PUT', 'DELETE'], true)) {
-                    // reference: https://en.wikipedia.org/wiki/Post/Redirect/Get
-                    $code = 303;
-                } else {
-                    $code = 307;
-                }
-            }
+        // Assume 302 status code response; override if needed
+        if (empty($code)) {
+            $code = 302;
         }
 
-        if ($code === null) {
-            $code = 302;
+        // IIS environment likely? Use 'refresh' for better compatibility
+        if ($method === 'auto' && isset($_SERVER['SERVER_SOFTWARE']) && strpos($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS') !== false) {
+            $method = 'refresh';
+        }
+
+        // override status code for HTTP/1.1 & higher
+        // reference: http://en.wikipedia.org/wiki/Post/Redirect/Get
+        if (isset($_SERVER['SERVER_PROTOCOL'], $_SERVER['REQUEST_METHOD']) && $this->getProtocolVersion() >= 1.1 && $method !== 'refresh') {
+            $code = ($_SERVER['REQUEST_METHOD'] !== 'GET') ? 303 : ($code === 302 ? 307 : $code);
         }
 
         switch ($method) {
@@ -557,9 +541,9 @@ trait ResponseTrait
      * @param string              $expire   Cookie expiration time in seconds
      * @param string              $domain   Cookie domain (e.g.: '.yourdomain.com')
      * @param string              $path     Cookie path (default: '/')
-     * @param string              $prefix   Cookie name prefix ('': the default prefix)
-     * @param bool|null           $secure   Whether to only transfer cookies via SSL
-     * @param bool|null           $httponly Whether only make the cookie accessible via HTTP (no javascript)
+     * @param string              $prefix   Cookie name prefix
+     * @param bool                $secure   Whether to only transfer cookies via SSL
+     * @param bool                $httponly Whether only make the cookie accessible via HTTP (no javascript)
      * @param string|null         $samesite
      *
      * @return $this
@@ -571,8 +555,8 @@ trait ResponseTrait
         $domain = '',
         $path = '/',
         $prefix = '',
-        $secure = null,
-        $httponly = null,
+        $secure = false,
+        $httponly = false,
         $samesite = null
     ) {
         if ($name instanceof Cookie) {
@@ -581,17 +565,8 @@ trait ResponseTrait
             return $this;
         }
 
-        /** @var CookieConfig|null $cookieConfig */
-        $cookieConfig = config(CookieConfig::class);
-
-        if ($cookieConfig instanceof CookieConfig) {
-            $secure ??= $cookieConfig->secure;
-            $httponly ??= $cookieConfig->httponly;
-            $samesite ??= $cookieConfig->samesite;
-        }
-
         if (is_array($name)) {
-            // always leave 'name' in last place, as the loop will break otherwise, due to ${$item}
+            // always leave 'name' in last place, as the loop will break otherwise, due to $$item
             foreach (['samesite', 'value', 'expire', 'domain', 'path', 'prefix', 'secure', 'httponly', 'name'] as $item) {
                 if (isset($name[$item])) {
                     ${$item} = $name[$item];
@@ -600,7 +575,7 @@ trait ResponseTrait
         }
 
         if (is_numeric($expire)) {
-            $expire = $expire > 0 ? Time::now()->getTimestamp() + $expire : 0;
+            $expire = $expire > 0 ? time() + $expire : 0;
         }
 
         $cookie = new Cookie($name, $value, [
@@ -641,9 +616,6 @@ trait ResponseTrait
     /**
      * Returns the cookie
      *
-     * @param string $prefix Cookie prefix.
-     *                       '': the default prefix
-     *
      * @return Cookie|Cookie[]|null
      */
     public function getCookie(?string $name = null, string $prefix = '')
@@ -657,7 +629,7 @@ trait ResponseTrait
 
             return $this->cookieStore->get($name, $prefix);
         } catch (CookieException $e) {
-            log_message('error', (string) $e);
+            log_message('error', $e->getMessage());
 
             return null;
         }
@@ -680,7 +652,6 @@ trait ResponseTrait
         $store    = $this->cookieStore;
         $found    = false;
 
-        /** @var Cookie $cookie */
         foreach ($store as $cookie) {
             if ($cookie->getPrefixedName() === $prefixed) {
                 if ($domain !== $cookie->getDomain()) {
@@ -778,9 +749,8 @@ trait ResponseTrait
      * Generates the headers that force a download to happen. And
      * sends the file to the browser.
      *
-     * @param string      $filename The name you want the downloaded file to be named
-     *                              or the path to the file to send
-     * @param string|null $data     The data to be downloaded. Set null if the $filename is the file path
+     * @param string      $filename The path to the file to send
+     * @param string|null $data     The data to be downloaded
      * @param bool        $setMime  Whether to try and send the actual MIME type
      *
      * @return DownloadResponse|null
@@ -807,10 +777,5 @@ trait ResponseTrait
         }
 
         return $response;
-    }
-
-    public function getCSP(): ContentSecurityPolicy
-    {
-        return $this->CSP;
     }
 }

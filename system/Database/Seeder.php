@@ -26,7 +26,6 @@ class Seeder
      * The name of the database group to use.
      *
      * @var string
-     * @phpstan-var non-empty-string
      */
     protected $DBGroup;
 
@@ -68,9 +67,11 @@ class Seeder
     /**
      * Faker Generator instance.
      *
+     * @var Generator|null
+     *
      * @deprecated
      */
-    private static ?Generator $faker = null;
+    private static $faker;
 
     /**
      * Seeder constructor.
@@ -91,9 +92,9 @@ class Seeder
 
         $this->config = &$config;
 
-        $db ??= Database::connect($this->DBGroup);
+        $db = $db ?? Database::connect($this->DBGroup);
 
-        $this->db    = $db;
+        $this->db    = &$db;
         $this->forge = Database::forge($this->DBGroup);
     }
 

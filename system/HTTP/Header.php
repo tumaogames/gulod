@@ -28,23 +28,15 @@ class Header
     /**
      * The value of the header. May have more than one
      * value. If so, will be an array of strings.
-     * E.g.,
-     *   [
-     *       'foo',
-     *       [
-     *           'bar' => 'fizz',
-     *       ],
-     *       'baz' => 'buzz',
-     *   ]
      *
-     * @var array<int|string, array<string, string>|string>|string
+     * @var array|string
      */
     protected $value;
 
     /**
      * Header constructor. name is mandatory, if a value is provided, it will be set.
      *
-     * @param array<int|string, array<string, string>|string>|string|null $value
+     * @param array|string|null $value
      */
     public function __construct(string $name, $value = null)
     {
@@ -64,7 +56,7 @@ class Header
      * Gets the raw value of the header. This may return either a string
      * of an array, depending on whether the header has multiple values or not.
      *
-     * @return array<int|string, array<string, string>|string>|string
+     * @return array|string
      */
     public function getValue()
     {
@@ -86,13 +78,13 @@ class Header
     /**
      * Sets the value of the header, overwriting any previous value(s).
      *
-     * @param array<int|string, array<string, string>|string>|string|null $value
+     * @param array|string|null $value
      *
      * @return $this
      */
     public function setValue($value = null)
     {
-        $this->value = is_array($value) ? $value : (string) $value;
+        $this->value = $value ?? '';
 
         return $this;
     }
@@ -101,7 +93,7 @@ class Header
      * Appends a value to the list of values for this header. If the
      * header is a single value string, it will be converted to an array.
      *
-     * @param array<string, string>|string|null $value
+     * @param array|string|null $value
      *
      * @return $this
      */
@@ -116,7 +108,7 @@ class Header
         }
 
         if (! in_array($value, $this->value, true)) {
-            $this->value[] = is_array($value) ? $value : (string) $value;
+            $this->value[] = $value;
         }
 
         return $this;
@@ -126,7 +118,7 @@ class Header
      * Prepends a value to the list of values for this header. If the
      * header is a single value string, it will be converted to an array.
      *
-     * @param array<string, string>|string|null $value
+     * @param array|string|null $value
      *
      * @return $this
      */

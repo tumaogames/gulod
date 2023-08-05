@@ -11,7 +11,6 @@
 
 namespace CodeIgniter\Session\Handlers;
 
-use CodeIgniter\I18n\Time;
 use CodeIgniter\Session\Exceptions\SessionException;
 use Config\App as AppConfig;
 use ReturnTypeWillChange;
@@ -67,9 +66,9 @@ class FileHandler extends BaseHandler
     {
         parent::__construct($config, $ipAddress);
 
-        if (! empty($this->savePath)) {
-            $this->savePath = rtrim($this->savePath, '/\\');
-            ini_set('session.save_path', $this->savePath);
+        if (! empty($config->sessionSavePath)) {
+            $this->savePath = rtrim($config->sessionSavePath, '/\\');
+            ini_set('session.save_path', $config->sessionSavePath);
         } else {
             $sessionPath = rtrim(ini_get('session.save_path'), '/\\');
 
@@ -79,6 +78,8 @@ class FileHandler extends BaseHandler
 
             $this->savePath = $sessionPath;
         }
+
+        $this->matchIP = $config->sessionMatchIP;
 
         $this->configureSessionIDRegex();
     }
@@ -275,7 +276,7 @@ class FileHandler extends BaseHandler
             return false;
         }
 
-        $ts = Time::now()->getTimestamp() - $max_lifetime;
+        $ts = time() - $max_lifetime;
 
         $pattern = $this->matchIP === true ? '[0-9a-f]{32}' : '';
 

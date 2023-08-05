@@ -14,10 +14,6 @@ namespace CodeIgniter\Commands\Generators;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 use CodeIgniter\CLI\GeneratorTrait;
-use Config\App as AppConfig;
-use Config\Database;
-use Config\Migrations;
-use Config\Session as SessionConfig;
 
 /**
  * Generates a skeleton migration file.
@@ -99,7 +95,6 @@ class MigrationGenerator extends BaseCommand
      */
     protected function prepare(string $class): string
     {
-        $data            = [];
         $data['session'] = false;
 
         if ($this->getOption('session')) {
@@ -109,14 +104,8 @@ class MigrationGenerator extends BaseCommand
             $data['session']  = true;
             $data['table']    = is_string($table) ? $table : 'ci_sessions';
             $data['DBGroup']  = is_string($DBGroup) ? $DBGroup : 'default';
-            $data['DBDriver'] = config(Database::class)->{$data['DBGroup']}['DBDriver'];
-
-            $config = config(AppConfig::class);
-            /** @var SessionConfig|null $session */
-            $session = config(SessionConfig::class);
-
-            $data['matchIP'] = ($session instanceof SessionConfig)
-                ? $session->matchIP : $config->sessionMatchIP;
+            $data['DBDriver'] = config('Database')->{$data['DBGroup']}['DBDriver'];
+            $data['matchIP']  = config('App')->sessionMatchIP;
         }
 
         return $this->parseTemplate($class, [], [], $data);
@@ -127,6 +116,6 @@ class MigrationGenerator extends BaseCommand
      */
     protected function basename(string $filename): string
     {
-        return gmdate(config(Migrations::class)->timestampFormat) . basename($filename);
+        return gmdate(config('Migrations')->timestampFormat) . basename($filename);
     }
 }

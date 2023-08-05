@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * The MIT License (MIT)
  *
@@ -27,17 +25,16 @@ declare(strict_types=1);
 
 namespace Kint\Zval\Representation;
 
-class MethodDefinitionRepresentation extends Representation
+class DocstringRepresentation extends Representation
 {
     public $file;
     public $line;
     public $class;
-    public $inherited = false;
-    public $hints = ['method_definition'];
+    public $hints = ['docstring'];
 
-    public function __construct(?string $file, ?int $line, ?string $class, ?string $docstring)
+    public function __construct($docstring, $file, $line, $class = null)
     {
-        parent::__construct('Method definition');
+        parent::__construct('Docstring');
 
         $this->file = $file;
         $this->line = $line;
@@ -60,7 +57,7 @@ class MethodDefinitionRepresentation extends Representation
      * absolutely must have it without comments (ie renderValueShort) this will
      * probably do.
      *
-     * @return ?string Docstring with comments stripped
+     * @return null|string Docstring with comments stripped
      */
     public function getDocstringWithoutComments()
     {

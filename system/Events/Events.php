@@ -14,15 +14,15 @@ namespace CodeIgniter\Events;
 use Config\Modules;
 use Config\Services;
 
+define('EVENT_PRIORITY_LOW', 200);
+define('EVENT_PRIORITY_NORMAL', 100);
+define('EVENT_PRIORITY_HIGH', 10);
+
 /**
  * Events
  */
 class Events
 {
-    public const PRIORITY_LOW    = 200;
-    public const PRIORITY_NORMAL = 100;
-    public const PRIORITY_HIGH   = 10;
-
     /**
      * The list of listeners.
      *
@@ -71,7 +71,8 @@ class Events
             return;
         }
 
-        $config = config(Modules::class);
+        /** @var Modules $config */
+        $config = config('Modules');
         $events = APPPATH . 'Config' . DIRECTORY_SEPARATOR . 'Events.php';
         $files  = [];
 
@@ -109,7 +110,7 @@ class Events
      * @param callable $callback
      * @param int      $priority
      */
-    public static function on($eventName, $callback, $priority = self::PRIORITY_NORMAL)
+    public static function on($eventName, $callback, $priority = EVENT_PRIORITY_NORMAL)
     {
         if (! isset(static::$listeners[$eventName])) {
             static::$listeners[$eventName] = [
@@ -245,7 +246,7 @@ class Events
      *
      * @return string[]
      */
-    public static function getFiles()
+    public function getFiles()
     {
         return static::$files;
     }

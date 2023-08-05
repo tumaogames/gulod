@@ -92,7 +92,6 @@ class Logger implements LoggerInterface
      * items.
      *
      * @var array
-     * @phpstan-var array<class-string, array<string, list<string>|string|int>>
      */
     protected $handlerConfig = [];
 
@@ -244,7 +243,7 @@ class Logger implements LoggerInterface
     /**
      * Logs with an arbitrary level.
      *
-     * @param string $level
+     * @param mixed  $level
      * @param string $message
      */
     public function log($level, $message, array $context = []): bool
@@ -265,6 +264,10 @@ class Logger implements LoggerInterface
 
         // Parse our placeholders
         $message = $this->interpolate($message, $context);
+
+        if (! is_string($message)) {
+            $message = print_r($message, true);
+        }
 
         if ($this->cacheLogs) {
             $this->logCache[] = [
@@ -309,14 +312,14 @@ class Logger implements LoggerInterface
      * {file}
      * {line}
      *
-     * @param string $message
+     * @param mixed $message
      *
-     * @return string
+     * @return mixed
      */
     protected function interpolate($message, array $context = [])
     {
         if (! is_string($message)) {
-            return print_r($message, true);
+            return $message;
         }
 
         // build a replacement array with braces around the context keys
@@ -326,7 +329,7 @@ class Logger implements LoggerInterface
             // Verify that the 'exception' key is actually an exception
             // or error, both of which implement the 'Throwable' interface.
             if ($key === 'exception' && $val instanceof Throwable) {
-                $val = $val->getMessage() . ' ' . clean_path($val->getFile()) . ':' . $val->getLine();
+                $val = $val->getMessage() . ' ' . $this->cleanFileNames($val->getFile()) . ':' . $val->getLine();
             }
 
             // todo - sanitize input before writing to file?
@@ -350,9 +353,11 @@ class Logger implements LoggerInterface
         if (strpos($message, 'env:') !== false) {
             preg_match('/env:[^}]+/', $message, $matches);
 
-            foreach ($matches as $str) {
-                $key                 = str_replace('env:', '', $str);
-                $replace["{{$str}}"] = $_ENV[$key] ?? 'n/a';
+            if ($matches) {
+                foreach ($matches as $str) {
+                    $key                 = str_replace('env:', '', $str);
+                    $replace["{{$str}}"] = $_ENV[$key] ?? 'n/a';
+                }
             }
         }
 
@@ -393,7 +398,7 @@ class Logger implements LoggerInterface
         // Find the first reference to a Logger class method
         foreach ($stackFrames as $frame) {
             if (\in_array($frame['function'], $logFunctions, true)) {
-                $file = isset($frame['file']) ? clean_path($frame['file']) : 'unknown';
+                $file = isset($frame['file']) ? $this->cleanFileNames($frame['file']) : 'unknown';
                 $line = $frame['line'] ?? 'unknown';
 
                 return [
@@ -416,11 +421,12 @@ class Logger implements LoggerInterface
      *  /var/www/site/app/Controllers/Home.php
      *      becomes:
      *  APPPATH/Controllers/Home.php
-     *
-     * @deprecated Use dedicated `clean_path()` function.
      */
     protected function cleanFileNames(string $file): string
     {
-        return clean_path($file);
+        $file = str_replace(APPPATH, 'APPPATH/', $file);
+        $file = str_replace(SYSTEMPATH, 'SYSTEMPATH/', $file);
+
+        return str_replace(FCPATH, 'FCPATH/', $file);
     }
 }

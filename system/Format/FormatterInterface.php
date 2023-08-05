@@ -19,9 +19,9 @@ interface FormatterInterface
     /**
      * Takes the given data and formats it.
      *
-     * @param array|object|string $data
+     * @param array|string $data
      *
-     * @return false|string
+     * @return mixed
      */
     public function format($data);
 }

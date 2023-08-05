@@ -22,9 +22,9 @@ class JSONFormatter implements FormatterInterface
     /**
      * Takes the given data and formats it.
      *
-     * @param array|bool|float|int|object|string|null $data
+     * @param mixed $data
      *
-     * @return false|string (JSON string | false)
+     * @return bool|string (JSON string | false)
      */
     public function format($data)
     {

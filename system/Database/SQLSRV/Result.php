@@ -17,8 +17,6 @@ use stdClass;
 
 /**
  * Result for SQLSRV
- *
- * @extends BaseResult<resource, resource>
  */
 class Result extends BaseResult
 {
@@ -103,8 +101,6 @@ class Result extends BaseResult
 
     /**
      * Frees the current result.
-     *
-     * @return void
      */
     public function freeResult()
     {
@@ -119,7 +115,7 @@ class Result extends BaseResult
      * internally before fetching results to make sure the result set
      * starts at zero.
      *
-     * @return bool
+     * @return mixed
      */
     public function dataSeek(int $n = 0)
     {
@@ -139,7 +135,7 @@ class Result extends BaseResult
      *
      * Overridden by driver classes.
      *
-     * @return array|false|null
+     * @return mixed
      */
     protected function fetchAssoc()
     {
@@ -149,7 +145,7 @@ class Result extends BaseResult
     /**
      * Returns the result set as an object.
      *
-     * @return Entity|false|object|stdClass
+     * @return bool|Entity|object
      */
     protected function fetchObject(string $className = 'stdClass')
     {

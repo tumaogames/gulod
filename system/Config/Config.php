@@ -23,7 +23,7 @@ class Config
      * @param string $name      Configuration name
      * @param bool   $getShared Use shared instance
      *
-     * @return object|null
+     * @return mixed|null
      */
     public static function get(string $name, bool $getShared = true)
     {

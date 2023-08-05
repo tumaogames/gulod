@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * The MIT License (MIT)
  *
@@ -28,13 +26,9 @@ declare(strict_types=1);
 namespace Kint\Renderer\Rich;
 
 use Kint\Renderer\RichRenderer;
-use Kint\Zval\InstanceValue;
 use Kint\Zval\Value;
 
-/**
- * @psalm-consistent-constructor
- */
-abstract class AbstractPlugin implements PluginInterface
+abstract class Plugin implements PluginInterface
 {
     protected $renderer;
 
@@ -44,9 +38,11 @@ abstract class AbstractPlugin implements PluginInterface
     }
 
     /**
-     * @param string $content The replacement for the getValueShort contents
+     * Renders a locked header.
+     *
+     * @param string $content
      */
-    public function renderLockedHeader(Value $o, string $content): string
+    public function renderLockedHeader(Value $o, $content)
     {
         $header = '<dt class="kint-parent kint-locked">';
 
@@ -69,28 +65,17 @@ abstract class AbstractPlugin implements PluginInterface
         }
 
         if (null !== ($s = $o->getType())) {
-            if (RichRenderer::$escape_types) {
-                $s = $this->renderer->escape($s);
-            }
+            $s = $this->renderer->escape($s);
 
             if ($o->reference) {
                 $s = '&amp;'.$s;
             }
 
-            $header .= '<var>'.$s.'</var>';
-
-            if ($o instanceof InstanceValue && isset($o->spl_object_id)) {
-                $header .= '#'.((int) $o->spl_object_id);
-            }
-
-            $header .= ' ';
+            $header .= '<var>'.$s.'</var> ';
         }
 
         if (null !== ($s = $o->getSize())) {
-            if (RichRenderer::$escape_types) {
-                $s = $this->renderer->escape($s);
-            }
-            $header .= '('.$s.') ';
+            $header .= '('.$this->renderer->escape($s).') ';
         }
 
         $header .= $content;

@@ -12,7 +12,6 @@
 namespace CodeIgniter\Test\Mock;
 
 use CodeIgniter\Cookie\Cookie;
-use CodeIgniter\I18n\Time;
 use CodeIgniter\Session\Session;
 
 /**
@@ -57,7 +56,7 @@ class MockSession extends Session
      */
     protected function setCookie()
     {
-        $expiration   = $this->sessionExpiration === 0 ? 0 : Time::now()->getTimestamp() + $this->sessionExpiration;
+        $expiration   = $this->sessionExpiration === 0 ? 0 : time() + $this->sessionExpiration;
         $this->cookie = $this->cookie->withValue(session_id())->withExpires($expiration);
 
         $this->cookies[] = $this->cookie;
@@ -66,6 +65,6 @@ class MockSession extends Session
     public function regenerate(bool $destroy = false)
     {
         $this->didRegenerate              = true;
-        $_SESSION['__ci_last_regenerate'] = Time::now()->getTimestamp();
+        $_SESSION['__ci_last_regenerate'] = time();
     }
 }

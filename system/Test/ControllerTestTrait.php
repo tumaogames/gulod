@@ -14,7 +14,7 @@ namespace CodeIgniter\Test;
 use CodeIgniter\Controller;
 use CodeIgniter\HTTP\Exceptions\HTTPException;
 use CodeIgniter\HTTP\IncomingRequest;
-use CodeIgniter\HTTP\ResponseInterface;
+use CodeIgniter\HTTP\Response;
 use CodeIgniter\HTTP\URI;
 use Config\App;
 use Config\Services;
@@ -55,7 +55,7 @@ trait ControllerTestTrait
     /**
      * Response.
      *
-     * @var ResponseInterface
+     * @var Response
      */
     protected $response;
 
@@ -96,7 +96,7 @@ trait ControllerTestTrait
         helper('url');
 
         if (empty($this->appConfig)) {
-            $this->appConfig = config(App::class);
+            $this->appConfig = config('App');
         }
 
         if (! $this->uri instanceof URI) {
@@ -108,7 +108,7 @@ trait ControllerTestTrait
             $tempUri = Services::uri();
             Services::injectMock('uri', $this->uri);
 
-            $this->withRequest(Services::request($this->appConfig, false));
+            $this->withRequest(Services::request($this->appConfig, false)->setBody($this->body));
 
             // Restore the URI service
             Services::injectMock('uri', $tempUri);
@@ -126,7 +126,7 @@ trait ControllerTestTrait
     /**
      * Loads the specified controller, and generates any needed dependencies.
      *
-     * @return $this
+     * @return mixed
      */
     public function controller(string $name)
     {
@@ -145,9 +145,9 @@ trait ControllerTestTrait
      *
      * @param array $params
      *
-     * @return TestResponse
-     *
      * @throws InvalidArgumentException
+     *
+     * @return TestResponse
      */
     public function execute(string $method, ...$params)
     {
@@ -156,7 +156,6 @@ trait ControllerTestTrait
         }
 
         $response = null;
-        $this->request->setBody($this->body);
 
         try {
             ob_start();
@@ -178,7 +177,7 @@ trait ControllerTestTrait
         }
 
         // If the controller did not return a response then start one
-        if (! $response instanceof ResponseInterface) {
+        if (! $response instanceof Response) {
             $response = $this->response;
         }
 
@@ -216,7 +215,7 @@ trait ControllerTestTrait
      *
      * @param mixed $appConfig
      *
-     * @return $this
+     * @return mixed
      */
     public function withConfig($appConfig)
     {
@@ -230,7 +229,7 @@ trait ControllerTestTrait
      *
      * @param mixed $request
      *
-     * @return $this
+     * @return mixed
      */
     public function withRequest($request)
     {
@@ -245,9 +244,9 @@ trait ControllerTestTrait
     /**
      * Set controller's response, with method chaining.
      *
-     * @param ResponseInterface $response
+     * @param mixed $response
      *
-     * @return $this
+     * @return mixed
      */
     public function withResponse($response)
     {
@@ -261,7 +260,7 @@ trait ControllerTestTrait
      *
      * @param mixed $logger
      *
-     * @return $this
+     * @return mixed
      */
     public function withLogger($logger)
     {
@@ -273,7 +272,7 @@ trait ControllerTestTrait
     /**
      * Set the controller's URI, with method chaining.
      *
-     * @return $this
+     * @return mixed
      */
     public function withUri(string $uri)
     {
@@ -287,7 +286,7 @@ trait ControllerTestTrait
      *
      * @param string|null $body
      *
-     * @return $this
+     * @return mixed
      */
     public function withBody($body)
     {

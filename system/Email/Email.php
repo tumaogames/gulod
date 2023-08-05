@@ -12,7 +12,6 @@
 namespace CodeIgniter\Email;
 
 use CodeIgniter\Events\Events;
-use CodeIgniter\I18n\Time;
 use Config\Mimes;
 use ErrorException;
 
@@ -290,13 +289,6 @@ class Email
     protected $debugMessage = [];
 
     /**
-     * Raw debug messages
-     *
-     * @var string[]
-     */
-    private array $debugMessageRaw = [];
-
-    /**
      * Recipients
      *
      * @var array|string
@@ -392,7 +384,7 @@ class Email
     protected static $func_overload;
 
     /**
-     * @param array|\Config\Email|null $config
+     * @param array|null $config
      */
     public function __construct($config = null)
     {
@@ -405,7 +397,7 @@ class Email
     /**
      * Initialize preferences
      *
-     * @param array|\Config\Email|null $config
+     * @param array|\Config\Email $config
      *
      * @return Email
      */
@@ -442,17 +434,16 @@ class Email
      */
     public function clear($clearAttachments = false)
     {
-        $this->subject         = '';
-        $this->body            = '';
-        $this->finalBody       = '';
-        $this->headerStr       = '';
-        $this->replyToFlag     = false;
-        $this->recipients      = [];
-        $this->CCArray         = [];
-        $this->BCCArray        = [];
-        $this->headers         = [];
-        $this->debugMessage    = [];
-        $this->debugMessageRaw = [];
+        $this->subject      = '';
+        $this->body         = '';
+        $this->finalBody    = '';
+        $this->headerStr    = '';
+        $this->replyToFlag  = false;
+        $this->recipients   = [];
+        $this->CCArray      = [];
+        $this->BCCArray     = [];
+        $this->headers      = [];
+        $this->debugMessage = [];
 
         $this->setHeader('Date', $this->setDate());
 
@@ -1055,8 +1046,10 @@ class Email
             $output .= $line . $this->newline;
         }
 
-        foreach ($unwrap as $key => $val) {
-            $output = str_replace('{{unwrapped' . $key . '}}', $val, $output);
+        if ($unwrap) {
+            foreach ($unwrap as $key => $val) {
+                $output = str_replace('{{unwrapped' . $key . '}}', $val, $output);
+            }
         }
 
         return $output;
@@ -1539,11 +1532,7 @@ class Email
             $this->setReplyTo($this->headers['From']);
         }
 
-        if (
-            empty($this->recipients) && ! isset($this->headers['To'])
-            && empty($this->BCCArray) && ! isset($this->headers['Bcc'])
-            && ! isset($this->headers['Cc'])
-        ) {
+        if (empty($this->recipients) && ! isset($this->headers['To']) && empty($this->BCCArray) && ! isset($this->headers['Bcc']) && ! isset($this->headers['Cc'])) {
             $this->setErrorMessage(lang('Email.noRecipients'));
 
             return false;
@@ -1667,16 +1656,11 @@ class Email
             $success = $this->{$method}();
         } catch (ErrorException $e) {
             $success = false;
-            log_message('error', 'Email: ' . $method . ' throwed ' . $e);
+            log_message('error', 'Email: ' . $method . ' throwed ' . $e->getMessage());
         }
 
         if (! $success) {
-            $message = lang('Email.sendFailure' . ($protocol === 'mail' ? 'PHPMail' : ucfirst($protocol)));
-
-            log_message('error', 'Email: ' . $message);
-            log_message('error', $this->printDebuggerRaw());
-
-            $this->setErrorMessage($message);
+            $this->setErrorMessage(lang('Email.sendFailure' . ($protocol === 'mail' ? 'PHPMail' : ucfirst($protocol))));
 
             return false;
         }
@@ -1883,10 +1867,7 @@ class Email
             $crypto = stream_socket_enable_crypto(
                 $this->SMTPConnect,
                 true,
-                STREAM_CRYPTO_METHOD_TLSv1_0_CLIENT
-                | STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT
-                | STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT
-                | STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT
+                STREAM_CRYPTO_METHOD_TLSv1_0_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT
             );
 
             if ($crypto !== true) {
@@ -1958,8 +1939,7 @@ class Email
 
         $reply = $this->getSMTPData();
 
-        $this->debugMessage[]    = '<pre>' . $cmd . ': ' . $reply . '</pre>';
-        $this->debugMessageRaw[] = $cmd . ': ' . $reply;
+        $this->debugMessage[] = '<pre>' . $cmd . ': ' . $reply . '</pre>';
 
         if ($resp === null || ((int) static::substr($reply, 0, 3) !== $resp)) {
             $this->setErrorMessage(lang('Email.SMTPError', [$reply]));
@@ -2046,8 +2026,8 @@ class Email
             // See https://bugs.php.net/bug.php?id=39598 and http://php.net/manual/en/function.fwrite.php#96951
             if ($result === 0) {
                 if ($timestamp === 0) {
-                    $timestamp = Time::now()->getTimestamp();
-                } elseif ($timestamp < (Time::now()->getTimestamp() - $this->SMTPTimeout)) {
+                    $timestamp = time();
+                } elseif ($timestamp < (time() - $this->SMTPTimeout)) {
                     $result = false;
 
                     break;
@@ -2108,17 +2088,12 @@ class Email
             return '[' . $_SERVER['SERVER_ADDR'] . ']';
         }
 
-        $hostname = gethostname();
-        if ($hostname !== false) {
-            return $hostname;
-        }
-
         return '[127.0.0.1]';
     }
 
     /**
-     * @param array|string $include List of raw data chunks to include in the output
-     *                              Valid options are: 'headers', 'subject', 'body'
+     * @param array $include List of raw data chunks to include in the output
+     *                       Valid options are: 'headers', 'subject', 'body'
      *
      * @return string
      */
@@ -2147,20 +2122,11 @@ class Email
     }
 
     /**
-     * Returns raw debug messages
-     */
-    private function printDebuggerRaw(): string
-    {
-        return implode("\n", $this->debugMessageRaw);
-    }
-
-    /**
      * @param string $msg
      */
     protected function setErrorMessage($msg)
     {
-        $this->debugMessage[]    = $msg . '<br>';
-        $this->debugMessageRaw[] = $msg;
+        $this->debugMessage[] = $msg . '<br />';
     }
 
     /**
@@ -2180,13 +2146,7 @@ class Email
     public function __destruct()
     {
         if (is_resource($this->SMTPConnect)) {
-            try {
-                $this->sendCommand('quit');
-            } catch (ErrorException $e) {
-                $protocol = $this->getProtocol();
-                $method   = 'sendWith' . ucfirst($protocol);
-                log_message('error', 'Email: ' . $method . ' throwed ' . $e);
-            }
+            $this->sendCommand('quit');
         }
     }
 

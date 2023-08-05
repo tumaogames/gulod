@@ -12,7 +12,6 @@
 namespace CodeIgniter\Database;
 
 use CodeIgniter\Config\BaseConfig;
-use Config\Database as DbConfig;
 use InvalidArgumentException;
 
 /**
@@ -37,12 +36,10 @@ class Config extends BaseConfig
     protected static $factory;
 
     /**
-     * Returns the database connection
+     * Creates the default
      *
-     * @param array|BaseConnection|string|null $group The name of the connection group to use,
-     *                                                or an array of configuration settings.
-     * @phpstan-param array|BaseConnection|non-empty-string|null $group
-     * @param bool $getShared Whether to return a shared instance of the connection.
+     * @param array|string $group     The name of the connection group to use, or an array of configuration settings.
+     * @param bool         $getShared Whether to return a shared instance of the connection.
      *
      * @return BaseConnection
      */
@@ -56,20 +53,16 @@ class Config extends BaseConfig
         if (is_array($group)) {
             $config = $group;
             $group  = 'custom-' . md5(json_encode($config));
-        } else {
-            $dbConfig = config(DbConfig::class);
+        }
 
-            if ($group === null) {
-                $group = (ENVIRONMENT === 'testing') ? 'tests' : $dbConfig->defaultGroup;
-            }
+        $config = $config ?? config('Database');
 
-            assert(is_string($group));
+        if (empty($group)) {
+            $group = ENVIRONMENT === 'testing' ? 'tests' : $config->defaultGroup;
+        }
 
-            if (! isset($dbConfig->{$group})) {
-                throw new InvalidArgumentException($group . ' is not a valid database connection group.');
-            }
-
-            $config = $dbConfig->{$group};
+        if (is_string($group) && ! isset($config->{$group}) && strpos($group, 'custom-') !== 0) {
+            throw new InvalidArgumentException($group . ' is not a valid database connection group.');
         }
 
         if ($getShared && isset(static::$instances[$group])) {
@@ -78,9 +71,13 @@ class Config extends BaseConfig
 
         static::ensureFactory();
 
+        if (isset($config->{$group})) {
+            $config = $config->{$group};
+        }
+
         $connection = static::$factory->load($config, $group);
 
-        static::$instances[$group] = $connection;
+        static::$instances[$group] = &$connection;
 
         return $connection;
     }
@@ -125,13 +122,11 @@ class Config extends BaseConfig
     /**
      * Returns a new instance of the Database Seeder.
      *
-     * @phpstan-param null|non-empty-string $group
-     *
      * @return Seeder
      */
     public static function seeder(?string $group = null)
     {
-        $config = config(DbConfig::class);
+        $config = config('Database');
 
         return new Seeder($config, static::connect($group));
     }

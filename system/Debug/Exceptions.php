@@ -12,17 +12,12 @@
 namespace CodeIgniter\Debug;
 
 use CodeIgniter\API\ResponseTrait;
-use CodeIgniter\Exceptions\HasExitCodeInterface;
-use CodeIgniter\Exceptions\HTTPExceptionInterface;
 use CodeIgniter\Exceptions\PageNotFoundException;
-use CodeIgniter\HTTP\CLIRequest;
-use CodeIgniter\HTTP\Exceptions\HTTPException;
 use CodeIgniter\HTTP\IncomingRequest;
-use CodeIgniter\HTTP\ResponseInterface;
+use CodeIgniter\HTTP\Response;
 use Config\Exceptions as ExceptionsConfig;
 use Config\Paths;
 use ErrorException;
-use Psr\Log\LogLevel;
 use Throwable;
 
 /**
@@ -55,25 +50,20 @@ class Exceptions
     protected $config;
 
     /**
-     * The request.
+     * The incoming request.
      *
-     * @var CLIRequest|IncomingRequest
+     * @var IncomingRequest
      */
     protected $request;
 
     /**
      * The outgoing response.
      *
-     * @var ResponseInterface
+     * @var Response
      */
     protected $response;
 
-    private ?Throwable $exceptionCaughtByExceptionHandler = null;
-
-    /**
-     * @param CLIRequest|IncomingRequest $request
-     */
-    public function __construct(ExceptionsConfig $config, $request, ResponseInterface $response)
+    public function __construct(ExceptionsConfig $config, IncomingRequest $request, Response $response)
     {
         $this->ob_level = ob_get_level();
         $this->viewPath = rtrim($config->errorViewPath, '\\/ ') . DIRECTORY_SEPARATOR;
@@ -82,14 +72,8 @@ class Exceptions
         $this->response = $response;
 
         // workaround for upgraded users
-        // This causes "Deprecated: Creation of dynamic property" in PHP 8.2.
-        // @TODO remove this after dropping PHP 8.1 support.
         if (! isset($this->config->sensitiveDataInTrace)) {
             $this->config->sensitiveDataInTrace = [];
-        }
-        if (! isset($this->config->logDeprecations, $this->config->deprecationLogLevel)) {
-            $this->config->logDeprecations     = false;
-            $this->config->deprecationLogLevel = LogLevel::WARNING;
         }
     }
 
@@ -115,36 +99,17 @@ class Exceptions
      */
     public function exceptionHandler(Throwable $exception)
     {
-        $this->exceptionCaughtByExceptionHandler = $exception;
-
         [$statusCode, $exitCode] = $this->determineCodes($exception);
 
-        // Get the first exception.
-        while ($prevException = $exception->getPrevious()) {
-            $exception = $prevException;
-        }
-
         if ($this->config->log === true && ! in_array($statusCode, $this->config->ignoreCodes, true)) {
-            log_message('critical', "{message}\nin {exFile} on line {exLine}.\n{trace}", [
-                'message' => $exception->getMessage(),
-                'exFile'  => clean_path($exception->getFile()), // {file} refers to THIS file
-                'exLine'  => $exception->getLine(), // {line} refers to THIS line
-                'trace'   => self::renderBacktrace($exception->getTrace()),
+            log_message('critical', $exception->getMessage() . "\n{trace}", [
+                'trace' => $exception->getTraceAsString(),
             ]);
         }
 
         if (! is_cli()) {
-            try {
-                $this->response->setStatusCode($statusCode);
-            } catch (HTTPException $e) {
-                // Workaround for invalid HTTP status code.
-                $statusCode = 500;
-                $this->response->setStatusCode($statusCode);
-            }
-
-            if (! headers_sent()) {
-                header(sprintf('HTTP/%s %s %s', $this->request->getProtocolVersion(), $this->response->getStatusCode(), $this->response->getReasonPhrase()), true, $statusCode);
-            }
+            $this->response->setStatusCode($statusCode);
+            header(sprintf('HTTP/%s %s %s', $this->request->getProtocolVersion(), $this->response->getStatusCode(), $this->response->getReasonPhrase()), true, $statusCode);
 
             if (strpos($this->request->getHeaderLine('accept'), 'text/html') === false) {
                 $this->respond(ENVIRONMENT === 'development' ? $this->collectVars($exception, $statusCode) : '', $statusCode)->send();
@@ -159,9 +124,11 @@ class Exceptions
     }
 
     /**
-     * The callback to be registered to `set_error_handler()`.
+     * Even in PHP7, some errors make it through to the errorHandler, so
+     * convert these to Exceptions and let the exception handler log it and
+     * display it.
      *
-     * @return bool
+     * This seems to be primarily when a user triggers it with trigger_error().
      *
      * @throws ErrorException
      *
@@ -169,19 +136,11 @@ class Exceptions
      */
     public function errorHandler(int $severity, string $message, ?string $file = null, ?int $line = null)
     {
-        if ($this->isDeprecationError($severity)) {
-            if (! $this->config->logDeprecations || (bool) env('CODEIGNITER_SCREAM_DEPRECATIONS')) {
-                throw new ErrorException($message, 0, $severity, $file, $line);
-            }
-
-            return $this->handleDeprecationError($message, $file, $line);
+        if (! (error_reporting() & $severity)) {
+            return;
         }
 
-        if (error_reporting() & $severity) {
-            throw new ErrorException($message, 0, $severity, $file, $line);
-        }
-
-        return false; // return false to propagate the error to PHP standard error handler
+        throw new ErrorException($message, 0, $severity, $file, $line);
     }
 
     /**
@@ -200,15 +159,8 @@ class Exceptions
 
         ['type' => $type, 'message' => $message, 'file' => $file, 'line' => $line] = $error;
 
-        if ($this->exceptionCaughtByExceptionHandler) {
-            $message .= "\n【Previous Exception】\n"
-                . get_class($this->exceptionCaughtByExceptionHandler) . "\n"
-                . $this->exceptionCaughtByExceptionHandler->getMessage() . "\n"
-                . $this->exceptionCaughtByExceptionHandler->getTraceAsString();
-        }
-
         if (in_array($type, [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE], true)) {
-            $this->exceptionHandler(new ErrorException($message, 0, $type, $file, $line));
+            $this->exceptionHandler(new ErrorException($message, $type, 0, $file, $line));
         }
     }
 
@@ -293,14 +245,14 @@ class Exceptions
         $trace = $exception->getTrace();
 
         if ($this->config->sensitiveDataInTrace !== []) {
-            $trace = $this->maskSensitiveData($trace, $this->config->sensitiveDataInTrace);
+            $this->maskSensitiveData($trace, $this->config->sensitiveDataInTrace);
         }
 
         return [
             'title'   => get_class($exception),
             'type'    => get_class($exception),
             'code'    => $statusCode,
-            'message' => $exception->getMessage(),
+            'message' => $exception->getMessage() ?? '(null)',
             'file'    => $exception->getFile(),
             'line'    => $exception->getLine(),
             'trace'   => $trace,
@@ -311,52 +263,31 @@ class Exceptions
      * Mask sensitive data in the trace.
      *
      * @param array|object $trace
-     *
-     * @return array|object
      */
-    protected function maskSensitiveData($trace, array $keysToMask, string $path = '')
-    {
-        foreach ($trace as $i => $line) {
-            $trace[$i]['args'] = $this->maskData($line['args'], $keysToMask);
-        }
-
-        return $trace;
-    }
-
-    /**
-     * @param array|object $args
-     *
-     * @return array|object
-     */
-    private function maskData($args, array $keysToMask, string $path = '')
+    protected function maskSensitiveData(&$trace, array $keysToMask, string $path = '')
     {
         foreach ($keysToMask as $keyToMask) {
             $explode = explode('/', $keyToMask);
             $index   = end($explode);
 
             if (strpos(strrev($path . '/' . $index), strrev($keyToMask)) === 0) {
-                if (is_array($args) && array_key_exists($index, $args)) {
-                    $args[$index] = '******************';
-                } elseif (
-                    is_object($args) && property_exists($args, $index)
-                    && isset($args->{$index}) && is_scalar($args->{$index})
-                ) {
-                    $args->{$index} = '******************';
+                if (is_array($trace) && array_key_exists($index, $trace)) {
+                    $trace[$index] = '******************';
+                } elseif (is_object($trace) && property_exists($trace, $index) && isset($trace->{$index})) {
+                    $trace->{$index} = '******************';
                 }
             }
         }
 
-        if (is_array($args)) {
-            foreach ($args as $pathKey => $subarray) {
-                $args[$pathKey] = $this->maskData($subarray, $keysToMask, $path . '/' . $pathKey);
-            }
-        } elseif (is_object($args)) {
-            foreach ($args as $pathKey => $subarray) {
-                $args->{$pathKey} = $this->maskData($subarray, $keysToMask, $path . '/' . $pathKey);
-            }
+        if (is_object($trace)) {
+            $trace = get_object_vars($trace);
         }
 
-        return $args;
+        if (is_array($trace)) {
+            foreach ($trace as $pathKey => $subarray) {
+                $this->maskSensitiveData($subarray, $keysToMask, $path . '/' . $pathKey);
+            }
+        }
     }
 
     /**
@@ -364,57 +295,29 @@ class Exceptions
      */
     protected function determineCodes(Throwable $exception): array
     {
-        $statusCode = 500;
-        $exitStatus = EXIT_ERROR;
+        $statusCode = abs($exception->getCode());
 
-        if ($exception instanceof HTTPExceptionInterface) {
-            $statusCode = $exception->getCode();
-        }
+        if ($statusCode < 100 || $statusCode > 599) {
+            $exitStatus = $statusCode + EXIT__AUTO_MIN;
 
-        if ($exception instanceof HasExitCodeInterface) {
-            $exitStatus = $exception->getExitCode();
+            if ($exitStatus > EXIT__AUTO_MAX) {
+                $exitStatus = EXIT_ERROR;
+            }
+
+            $statusCode = 500;
+        } else {
+            $exitStatus = EXIT_ERROR;
         }
 
         return [$statusCode, $exitStatus];
     }
 
-    private function isDeprecationError(int $error): bool
-    {
-        $deprecations = E_DEPRECATED | E_USER_DEPRECATED;
-
-        return ($error & $deprecations) !== 0;
-    }
-
-    /**
-     * @return true
-     */
-    private function handleDeprecationError(string $message, ?string $file = null, ?int $line = null): bool
-    {
-        // Remove the trace of the error handler.
-        $trace = array_slice(debug_backtrace(), 2);
-
-        log_message(
-            $this->config->deprecationLogLevel,
-            "[DEPRECATED] {message} in {errFile} on line {errLine}.\n{trace}",
-            [
-                'message' => $message,
-                'errFile' => clean_path($file ?? ''),
-                'errLine' => $line ?? 0,
-                'trace'   => self::renderBacktrace($trace),
-            ]
-        );
-
-        return true;
-    }
-
-    // --------------------------------------------------------------------
+    //--------------------------------------------------------------------
     // Display Methods
-    // --------------------------------------------------------------------
+    //--------------------------------------------------------------------
 
     /**
      * This makes nicer looking paths for the error output.
-     *
-     * @deprecated Use dedicated `clean_path()` function.
      */
     public static function cleanPath(string $file): string
     {
@@ -449,11 +352,11 @@ class Exceptions
             return $bytes . 'B';
         }
 
-        if ($bytes < 1_048_576) {
+        if ($bytes < 1048576) {
             return round($bytes / 1024, 2) . 'KB';
         }
 
-        return round($bytes / 1_048_576, 2) . 'MB';
+        return round($bytes / 1048576, 2) . 'MB';
     }
 
     /**
@@ -526,53 +429,5 @@ class Exceptions
         }
 
         return '<pre><code>' . $out . '</code></pre>';
-    }
-
-    private static function renderBacktrace(array $backtrace): string
-    {
-        $backtraces = [];
-
-        foreach ($backtrace as $index => $trace) {
-            $frame = $trace + ['file' => '[internal function]', 'line' => '', 'class' => '', 'type' => '', 'args' => []];
-
-            if ($frame['file'] !== '[internal function]') {
-                $frame['file'] = sprintf('%s(%s)', $frame['file'], $frame['line']);
-            }
-
-            unset($frame['line']);
-            $idx = $index;
-            $idx = str_pad((string) ++$idx, 2, ' ', STR_PAD_LEFT);
-
-            $args = implode(', ', array_map(static function ($value): string {
-                switch (true) {
-                    case is_object($value):
-                        return sprintf('Object(%s)', get_class($value));
-
-                    case is_array($value):
-                        return $value !== [] ? '[...]' : '[]';
-
-                    case $value === null:
-                        return 'null';
-
-                    case is_resource($value):
-                        return sprintf('resource (%s)', get_resource_type($value));
-
-                    default:
-                        return var_export($value, true);
-                }
-            }, $frame['args']));
-
-            $backtraces[] = sprintf(
-                '%s %s: %s%s%s(%s)',
-                $idx,
-                clean_path($frame['file']),
-                $frame['class'],
-                $frame['type'],
-                $frame['function'],
-                $args
-            );
-        }
-
-        return implode("\n", $backtraces);
     }
 }

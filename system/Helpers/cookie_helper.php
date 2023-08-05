@@ -10,12 +10,11 @@
  */
 
 use Config\App;
-use Config\Cookie;
 use Config\Services;
 
-// =============================================================================
+//=============================================================================
 // CodeIgniter Cookie Helpers
-// =============================================================================
+//=============================================================================
 
 if (! function_exists('set_cookie')) {
     /**
@@ -29,9 +28,9 @@ if (! function_exists('set_cookie')) {
      * @param string       $expire   The number of seconds until expiration
      * @param string       $domain   For site-wide cookie. Usually: .yourdomain.com
      * @param string       $path     The cookie path
-     * @param string       $prefix   The cookie prefix ('': the default prefix)
-     * @param bool|null    $secure   True makes the cookie secure
-     * @param bool|null    $httpOnly True makes the cookie accessible via http(s) only (no javascript)
+     * @param string       $prefix   The cookie prefix
+     * @param bool         $secure   True makes the cookie secure
+     * @param bool         $httpOnly True makes the cookie accessible via http(s) only (no javascript)
      * @param string|null  $sameSite The cookie SameSite value
      *
      * @see \CodeIgniter\HTTP\Response::setCookie()
@@ -43,8 +42,8 @@ if (! function_exists('set_cookie')) {
         string $domain = '',
         string $path = '/',
         string $prefix = '',
-        ?bool $secure = null,
-        ?bool $httpOnly = null,
+        bool $secure = false,
+        bool $httpOnly = false,
         ?string $sameSite = null
     ) {
         $response = Services::response();
@@ -56,25 +55,15 @@ if (! function_exists('get_cookie')) {
     /**
      * Fetch an item from the $_COOKIE array
      *
-     * @param string      $index
-     * @param string|null $prefix Cookie name prefix.
-     *                            '': the prefix in Config\Cookie
-     *                            null: no prefix
+     * @param string $index
      *
-     * @return array|string|null
+     * @return mixed
      *
      * @see \CodeIgniter\HTTP\IncomingRequest::getCookie()
      */
-    function get_cookie($index, bool $xssClean = false, ?string $prefix = '')
+    function get_cookie($index, bool $xssClean = false)
     {
-        if ($prefix === '') {
-            /** @var Cookie|null $cookie */
-            $cookie = config(Cookie::class);
-
-            // @TODO Remove Config\App fallback when deprecated `App` members are removed.
-            $prefix = $cookie instanceof Cookie ? $cookie->prefix : config(App::class)->cookiePrefix;
-        }
-
+        $prefix  = isset($_COOKIE[$index]) ? '' : config(App::class)->cookiePrefix;
         $request = Services::request();
         $filter  = $xssClean ? FILTER_SANITIZE_FULL_SPECIAL_CHARS : FILTER_DEFAULT;
 
@@ -86,7 +75,7 @@ if (! function_exists('delete_cookie')) {
     /**
      * Delete a cookie
      *
-     * @param string $name
+     * @param mixed  $name
      * @param string $domain the cookie domain. Usually: .yourdomain.com
      * @param string $path   the cookie path
      * @param string $prefix the cookie prefix

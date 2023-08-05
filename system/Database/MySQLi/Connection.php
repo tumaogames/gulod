@@ -14,16 +14,13 @@ namespace CodeIgniter\Database\MySQLi;
 use CodeIgniter\Database\BaseConnection;
 use CodeIgniter\Database\Exceptions\DatabaseException;
 use LogicException;
-use mysqli;
-use mysqli_result;
+use MySQLi;
 use mysqli_sql_exception;
 use stdClass;
 use Throwable;
 
 /**
  * Connection for MySQLi
- *
- * @extends BaseConnection<mysqli, mysqli_result>
  */
 class Connection extends BaseConnection
 {
@@ -57,7 +54,7 @@ class Connection extends BaseConnection
      *
      * Has to be preserved without being assigned to $conn_id.
      *
-     * @var false|mysqli
+     * @var MySQLi
      */
     public $mysqli;
 
@@ -75,9 +72,9 @@ class Connection extends BaseConnection
     /**
      * Connect to the database.
      *
-     * @return false|mysqli
-     *
      * @throws DatabaseException
+     *
+     * @return mixed
      */
     public function connect(bool $persistent = false)
     {
@@ -280,7 +277,7 @@ class Connection extends BaseConnection
     /**
      * Executes the query against the database.
      *
-     * @return false|mysqli_result;
+     * @return mixed
      */
     protected function execute(string $sql)
     {
@@ -294,10 +291,10 @@ class Connection extends BaseConnection
         try {
             return $this->connID->query($this->prepQuery($sql), $this->resultMode);
         } catch (mysqli_sql_exception $e) {
-            log_message('error', (string) $e);
+            log_message('error', $e->getMessage());
 
             if ($this->DBDebug) {
-                throw new DatabaseException($e->getMessage(), $e->getCode(), $e);
+                throw $e;
             }
         }
 
@@ -363,7 +360,7 @@ class Connection extends BaseConnection
         // Escape LIKE condition wildcards
         return str_replace(
             [$this->likeEscapeChar, '%', '_'],
-            ['\\' . $this->likeEscapeChar, '\\%', '\\_'],
+            ['\\' . $this->likeEscapeChar, '\\' . '%', '\\' . '_'],
             $str
         );
     }
@@ -371,16 +368,10 @@ class Connection extends BaseConnection
     /**
      * Generates the SQL for listing tables in a platform-dependent manner.
      * Uses escapeLikeStringDirect().
-     *
-     * @param string|null $tableName If $tableName is provided will return only this table if exists.
      */
-    protected function _listTables(bool $prefixLimit = false, ?string $tableName = null): string
+    protected function _listTables(bool $prefixLimit = false): string
     {
         $sql = 'SHOW TABLES FROM ' . $this->escapeIdentifiers($this->database);
-
-        if ($tableName !== null) {
-            return $sql . ' LIKE ' . $this->escape($tableName);
-        }
 
         if ($prefixLimit !== false && $this->DBPrefix !== '') {
             return $sql . " LIKE '" . $this->escapeLikeStringDirect($this->DBPrefix) . "%'";
@@ -400,9 +391,9 @@ class Connection extends BaseConnection
     /**
      * Returns an array of objects with field data
      *
-     * @return stdClass[]
-     *
      * @throws DatabaseException
+     *
+     * @return stdClass[]
      */
     protected function _fieldData(string $table): array
     {
@@ -432,10 +423,10 @@ class Connection extends BaseConnection
     /**
      * Returns an array of objects with index data
      *
-     * @return stdClass[]
-     *
      * @throws DatabaseException
      * @throws LogicException
+     *
+     * @return stdClass[]
      */
     protected function _indexData(string $table): array
     {
@@ -478,53 +469,50 @@ class Connection extends BaseConnection
     /**
      * Returns an array of objects with Foreign key data
      *
-     * @return stdClass[]
-     *
      * @throws DatabaseException
+     *
+     * @return stdClass[]
      */
     protected function _foreignKeyData(string $table): array
     {
         $sql = '
-                SELECT
-                    tc.CONSTRAINT_NAME,
-                    tc.TABLE_NAME,
-                    kcu.COLUMN_NAME,
-                    rc.REFERENCED_TABLE_NAME,
-                    kcu.REFERENCED_COLUMN_NAME,
-                    rc.DELETE_RULE,
-                    rc.UPDATE_RULE,
-                    rc.MATCH_OPTION
-                FROM information_schema.table_constraints AS tc
-                INNER JOIN information_schema.referential_constraints AS rc
-                    ON tc.constraint_name = rc.constraint_name
-                    AND tc.constraint_schema = rc.constraint_schema
-                INNER JOIN information_schema.key_column_usage AS kcu
-                    ON tc.constraint_name = kcu.constraint_name
-                    AND tc.constraint_schema = kcu.constraint_schema
-                WHERE
-                    tc.constraint_type = ' . $this->escape('FOREIGN KEY') . ' AND
-                    tc.table_schema = ' . $this->escape($this->database) . ' AND
-                    tc.table_name = ' . $this->escape($table);
+                    SELECT
+                        tc.CONSTRAINT_NAME,
+                        tc.TABLE_NAME,
+                        kcu.COLUMN_NAME,
+                        rc.REFERENCED_TABLE_NAME,
+                        kcu.REFERENCED_COLUMN_NAME
+                    FROM information_schema.TABLE_CONSTRAINTS AS tc
+                    INNER JOIN information_schema.REFERENTIAL_CONSTRAINTS AS rc
+                        ON tc.CONSTRAINT_NAME = rc.CONSTRAINT_NAME
+                        AND tc.CONSTRAINT_SCHEMA = rc.CONSTRAINT_SCHEMA
+                    INNER JOIN information_schema.KEY_COLUMN_USAGE AS kcu
+                        ON tc.CONSTRAINT_NAME = kcu.CONSTRAINT_NAME
+                        AND tc.CONSTRAINT_SCHEMA = kcu.CONSTRAINT_SCHEMA
+                    WHERE
+                        tc.CONSTRAINT_TYPE = ' . $this->escape('FOREIGN KEY') . ' AND
+                        tc.TABLE_SCHEMA = ' . $this->escape($this->database) . ' AND
+                        tc.TABLE_NAME = ' . $this->escape($table);
 
         if (($query = $this->query($sql)) === false) {
             throw new DatabaseException(lang('Database.failGetForeignKeyData'));
         }
+        $query = $query->getResultObject();
 
-        $query   = $query->getResultObject();
-        $indexes = [];
+        $retVal = [];
 
         foreach ($query as $row) {
-            $indexes[$row->CONSTRAINT_NAME]['constraint_name']       = $row->CONSTRAINT_NAME;
-            $indexes[$row->CONSTRAINT_NAME]['table_name']            = $row->TABLE_NAME;
-            $indexes[$row->CONSTRAINT_NAME]['column_name'][]         = $row->COLUMN_NAME;
-            $indexes[$row->CONSTRAINT_NAME]['foreign_table_name']    = $row->REFERENCED_TABLE_NAME;
-            $indexes[$row->CONSTRAINT_NAME]['foreign_column_name'][] = $row->REFERENCED_COLUMN_NAME;
-            $indexes[$row->CONSTRAINT_NAME]['on_delete']             = $row->DELETE_RULE;
-            $indexes[$row->CONSTRAINT_NAME]['on_update']             = $row->UPDATE_RULE;
-            $indexes[$row->CONSTRAINT_NAME]['match']                 = $row->MATCH_OPTION;
+            $obj                      = new stdClass();
+            $obj->constraint_name     = $row->CONSTRAINT_NAME;
+            $obj->table_name          = $row->TABLE_NAME;
+            $obj->column_name         = $row->COLUMN_NAME;
+            $obj->foreign_table_name  = $row->REFERENCED_TABLE_NAME;
+            $obj->foreign_column_name = $row->REFERENCED_COLUMN_NAME;
+
+            $retVal[] = $obj;
         }
 
-        return $this->foreignKeyDataToObjects($indexes);
+        return $retVal;
     }
 
     /**

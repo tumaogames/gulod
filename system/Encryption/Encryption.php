@@ -71,7 +71,7 @@ class Encryption
     /**
      * Handlers that are to be installed
      *
-     * @var array<string, bool>
+     * @var array<string, boolean>
      */
     protected $handlers = [];
 
@@ -80,7 +80,7 @@ class Encryption
      */
     public function __construct(?EncryptionConfig $config = null)
     {
-        $config ??= new EncryptionConfig();
+        $config = $config ?? new EncryptionConfig();
 
         $this->key    = $config->key;
         $this->driver = $config->driver;
@@ -100,9 +100,9 @@ class Encryption
     /**
      * Initialize or re-initialize an encrypter
      *
-     * @return EncrypterInterface
-     *
      * @throws EncryptionException
+     *
+     * @return EncrypterInterface
      */
     public function initialize(?EncryptionConfig $config = null)
     {
@@ -149,7 +149,7 @@ class Encryption
      *
      * @param string $key Property name
      *
-     * @return array|string|null
+     * @return mixed
      */
     public function __get($key)
     {

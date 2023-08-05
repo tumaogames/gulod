@@ -15,9 +15,8 @@ use CodeIgniter\HTTP\Exceptions\HTTPException;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Validation\Exceptions\ValidationException;
-use CodeIgniter\Validation\ValidationInterface;
+use CodeIgniter\Validation\Validation;
 use Config\Services;
-use Config\Validation;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -63,7 +62,7 @@ class Controller
     /**
      * Once validation has been run, will hold the Validation instance.
      *
-     * @var ValidationInterface
+     * @var Validation
      */
     protected $validator;
 
@@ -98,7 +97,7 @@ class Controller
      *
      * @throws HTTPException
      */
-    protected function forceHTTPS(int $duration = 31_536_000)
+    protected function forceHTTPS(int $duration = 31536000)
     {
         force_https($duration, $this->request, $this->response);
     }
@@ -129,43 +128,19 @@ class Controller
     }
 
     /**
-     * A shortcut to performing validation on Request data.
+     * A shortcut to performing validation on input data. If validation
+     * is not successful, a $errors property will be set on this class.
      *
      * @param array|string $rules
      * @param array        $messages An array of custom error messages
      */
     protected function validate($rules, array $messages = []): bool
     {
-        $this->setValidator($rules, $messages);
-
-        return $this->validator->withRequest($this->request)->run();
-    }
-
-    /**
-     * A shortcut to performing validation on any input data.
-     *
-     * @param array        $data     The data to validate
-     * @param array|string $rules
-     * @param array        $messages An array of custom error messages
-     * @param string|null  $dbGroup  The database group to use
-     */
-    protected function validateData(array $data, $rules, array $messages = [], ?string $dbGroup = null): bool
-    {
-        $this->setValidator($rules, $messages);
-
-        return $this->validator->run($data, null, $dbGroup);
-    }
-
-    /**
-     * @param array|string $rules
-     */
-    private function setValidator($rules, array $messages): void
-    {
         $this->validator = Services::validation();
 
         // If you replace the $rules array with the name of the group
         if (is_string($rules)) {
-            $validation = config(Validation::class);
+            $validation = config('Validation');
 
             // If the rule wasn't found in the \Config\Validation, we
             // should throw an exception so the developer can find it.
@@ -182,6 +157,6 @@ class Controller
             $rules = $validation->{$rules};
         }
 
-        $this->validator->setRules($rules, $messages);
+        return $this->validator->withRequest($this->request)->setRules($rules, $messages)->run();
     }
 }

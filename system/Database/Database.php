@@ -16,7 +16,7 @@ use InvalidArgumentException;
 /**
  * Database Connection Factory
  *
- * Creates and returns an instance of the appropriate Database Connection.
+ * Creates and returns an instance of the appropriate DatabaseConnection
  */
 class Database
 {
@@ -32,11 +32,12 @@ class Database
     protected $connections = [];
 
     /**
-     * Parses the connection binds and creates a Database Connection instance.
-     *
-     * @return BaseConnection
+     * Parses the connection binds and returns an instance of the driver
+     * ready to go.
      *
      * @throws InvalidArgumentException
+     *
+     * @return mixed
      */
     public function load(array $params = [], string $alias = '')
     {
@@ -60,7 +61,7 @@ class Database
     /**
      * Creates a Forge instance for the current database type.
      */
-    public function loadForge(ConnectionInterface $db): Forge
+    public function loadForge(ConnectionInterface $db): object
     {
         if (! $db->connID) {
             $db->initialize();
@@ -70,9 +71,9 @@ class Database
     }
 
     /**
-     * Creates an instance of Utils for the current database type.
+     * Creates a Utils instance for the current database type.
      */
-    public function loadUtils(ConnectionInterface $db): BaseUtils
+    public function loadUtils(ConnectionInterface $db): object
     {
         if (! $db->connID) {
             $db->initialize();
@@ -82,7 +83,7 @@ class Database
     }
 
     /**
-     * Parses universal DSN string
+     * Parse universal DSN string
      *
      * @throws InvalidArgumentException
      */
@@ -120,20 +121,18 @@ class Database
     }
 
     /**
-     * Creates a database object.
+     * Initialize database driver.
      *
-     * @param string       $driver   Driver name. FQCN can be used.
-     * @param string       $class    'Connection'|'Forge'|'Utils'
-     * @param array|object $argument The constructor parameter.
-     *
-     * @return BaseConnection|BaseUtils|Forge
+     * @param array|object $argument
      */
     protected function initDriver(string $driver, string $class, $argument): object
     {
-        $classname = (strpos($driver, '\\') === false)
-            ? "CodeIgniter\\Database\\{$driver}\\{$class}"
-            : $driver . '\\' . $class;
+        $class = $driver . '\\' . $class;
 
-        return new $classname($argument);
+        if (strpos($driver, '\\') === false) {
+            $class = "CodeIgniter\\Database\\{$class}";
+        }
+
+        return new $class($argument);
     }
 }

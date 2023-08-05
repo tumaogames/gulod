@@ -16,20 +16,9 @@ use CodeIgniter\Database\BaseConnection;
 use CodeIgniter\Database\BaseResult;
 use CodeIgniter\Database\Query;
 
-/**
- * @extends BaseConnection<object|resource, object|resource>
- */
 class MockConnection extends BaseConnection
 {
     protected $returnValues = [];
-
-    /**
-     * Database schema for Postgre and SQLSRV
-     *
-     * @var string
-     */
-    protected $schema;
-
     public $database;
     public $lastQuery;
 
@@ -142,7 +131,7 @@ class MockConnection extends BaseConnection
     /**
      * Executes the query against the database.
      *
-     * @return bool|object
+     * @return mixed
      */
     protected function execute(string $sql)
     {
@@ -182,10 +171,8 @@ class MockConnection extends BaseConnection
 
     /**
      * Generates the SQL for listing tables in a platform-dependent manner.
-     *
-     * @param string|null $tableName If $tableName is provided will return only this table if exists.
      */
-    protected function _listTables(bool $constrainByPrefix = false, ?string $tableName = null): string
+    protected function _listTables(bool $constrainByPrefix = false): string
     {
         return '';
     }

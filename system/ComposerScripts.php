@@ -30,8 +30,10 @@ final class ComposerScripts
 {
     /**
      * Path to the ThirdParty directory.
+     *
+     * @var string
      */
-    private static string $path = __DIR__ . '/ThirdParty/';
+    private static $path = __DIR__ . '/ThirdParty/';
 
     /**
      * Direct dependencies of CodeIgniter to copy
@@ -39,7 +41,7 @@ final class ComposerScripts
      *
      * @var array<string, array<string, string>>
      */
-    private static array $dependencies = [
+    private static $dependencies = [
         'kint-src' => [
             'license' => __DIR__ . '/../vendor/kint-php/kint/LICENSE',
             'from'    => __DIR__ . '/../vendor/kint-php/kint/src/',
@@ -69,14 +71,8 @@ final class ComposerScripts
     {
         self::recursiveDelete(self::$path);
 
-        foreach (self::$dependencies as $key => $dependency) {
-            // Kint may be removed.
-            if (! is_dir($dependency['from']) && strpos($key, 'kint') === 0) {
-                continue;
-            }
-
+        foreach (self::$dependencies as $dependency) {
             self::recursiveMirror($dependency['from'], $dependency['to']);
-
             if (isset($dependency['license'])) {
                 $license = basename($dependency['license']);
                 copy($dependency['license'], $dependency['to'] . '/' . $license);
@@ -93,9 +89,7 @@ final class ComposerScripts
     private static function recursiveDelete(string $directory): void
     {
         if (! is_dir($directory)) {
-            echo sprintf('Cannot recursively delete "%s" as it does not exist.', $directory) . PHP_EOL;
-
-            return;
+            echo sprintf('Cannot recursively delete "%s" as it does not exist.', $directory);
         }
 
         /** @var SplFileInfo $file */
@@ -134,11 +128,7 @@ final class ComposerScripts
             exit(1);
         }
 
-        if (! @mkdir($targetDir, 0755, true)) {
-            echo sprintf('Cannot create the target directory: "%s"', $targetDir) . PHP_EOL;
-
-            exit(1);
-        }
+        @mkdir($targetDir, 0755, true);
 
         $dirLen = strlen($originDir);
 
