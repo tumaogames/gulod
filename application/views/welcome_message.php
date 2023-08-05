@@ -95,59 +95,60 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <div class="results-list">
       <!-- Sample Data -->
 	  <div class="row">
-  <?php
-  // Sample data for pagination demonstration
-  $totalItems = 15; // Total number of items
-  $itemsPerPage = 5; // Number of items per page
-  $currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
-  $totalPages = ceil($totalItems / $itemsPerPage);
-  $startItem = ($currentPage - 1) * $itemsPerPage;
+		<?php
+		// Sample data for pagination demonstration
+		$totalItems = 15; // Total number of items
+		$itemsPerPage = 5; // Number of items per page
+		$currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+		$totalPages = ceil($totalItems / $itemsPerPage);
+		$startItem = ($currentPage - 1) * $itemsPerPage;
 
-  // Sample data array
-  $sampleData = array();
-  for ($i = $startItem; $i < min($startItem + $itemsPerPage, $totalItems); $i++) {
-    $sampleData[] = array(
-      'id' => $i + 1,
-      'name' => 'Sample Item ' . ($i + 1),
-    );
-  }
+		// Sample data array
+		$sampleData = array();
+		for ($i = $startItem; $i < min($startItem + $itemsPerPage, $totalItems); $i++) {
+			$sampleData[] = array(
+			'id' => $i + 1,
+			'name' => 'Sample Item ' . ($i + 1),
+			);
+		}
 
-  // Display the sample data in a table
-  if (!empty($sampleData)) {
-    echo '<table class="table table-striped">';
-    echo '<thead><tr><th>ID</th><th>Name</th></tr></thead>';
-    echo '<tbody>';
-    foreach ($sampleData as $item) {
-      echo '<tr>';
-      echo '<td>' . $item['id'] . '</td>';
-      echo '<td>' . $item['name'] . '</td>';
-      echo '</tr>';
-    }
-    echo '</tbody></table>';
-  }
-  ?>
+		// Display the sample data in a table
+		if (!empty($sampleData)) {
+			echo '<table class="table table-striped">';
+			echo '<thead><tr><th>ID</th><th>Name</th></tr></thead>';
+			echo '<tbody>';
+			foreach ($sampleData as $item) {
+			echo '<tr>';
+			echo '<td>' . $item['id'] . '</td>';
+			echo '<td>' . $item['name'] . '</td>';
+			echo '</tr>';
+			}
+			echo '</tbody></table>';
+		}
+		?>
 
-  <!-- Pagination -->
-  <nav aria-label="Page navigation">
-    <ul class="pagination justify-content-center">
-      <?php
-      // Generate pagination links
-      for ($i = 1; $i <= $totalPages; $i++) {
-        $activeClass = $i === $currentPage ? ' active' : '';
-        echo '<li class="page-item' . $activeClass . '"><a class="page-link" href="?page=' . $i . '">' . $i . '</a></li>';
-      }
-      ?>
-    </ul>
-  </nav>
-    </div>
+		<!-- Pagination -->
+		<nav aria-label="Page navigation">
+			<ul class="pagination justify-content-center">
+			<?php
+			// Generate pagination links
+			for ($i = 1; $i <= $totalPages; $i++) {
+				$activeClass = $i === $currentPage ? ' active' : '';
+				echo '<li class="page-item' . $activeClass . '"><a class="page-link" href="?page=' . $i . '">' . $i . '</a></li>';
+			}
+			?>
+			</ul>
+		</nav>
+		</div>
+			</div>
 
-    <!-- Footer -->
-    <footer class="footer bg-light mt-4">
-      <div class="container text-center">
-        <span class="text-muted"
-          >Search Landing &copy; 2023. All rights reserved.</span
-        >
-      </div>
+			<!-- Footer -->
+			<footer class="footer bg-light mt-4">
+			<div class="container text-center">
+				<span class="text-muted"
+				>Search Landing &copy; 2023. All rights reserved.</span
+				>
+			
 	</div>
     </footer>
 
