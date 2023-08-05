@@ -66,7 +66,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
   <body>
     <!-- Navigation bar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="#">Search Landing</a>
+      <a class="navbar-brand" href="#">Barangay Gulod</a>
       <!-- Add additional navigation items if needed -->
     </nav>
 
