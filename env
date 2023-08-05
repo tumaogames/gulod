@@ -62,11 +62,11 @@
 
 # database.default.hostname = localhost
 
-# database.default.database = mydb
+# database.default.database = u912421279_mydb
 
-# database.default.username = root
+# database.default.username = u912421279_root
 
-# database.default.password = root
+# database.default.password = Anderwood1988\*
 
 # database.default.DBDriver = MySQLi
 
