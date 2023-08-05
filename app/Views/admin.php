@@ -12,7 +12,7 @@
     <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-4">
-                <h2 class="text-center mb-4">Admin Panel Login</h2>
+                <h2 class="text-center mb-4">Admin Panel Login.</h2>
                 <form id="loginForm">
                     <div class="form-group">
                         <label for="username">Username</label>
