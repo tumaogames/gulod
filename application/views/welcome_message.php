@@ -78,7 +78,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
           <input
             type="text"
             class="form-control"
-            placeholder="Enter your search term here"
+            placeholder="Enter Full Name here"
             aria-label="Search term"
             aria-describedby="search-btn"
           />
