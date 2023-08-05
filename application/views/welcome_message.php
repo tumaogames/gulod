@@ -72,7 +72,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
     <!-- Main content -->
     <div class="search-container">
-      <div class="p-5"><h1>Hello World</h1></div>
+      <div class="p-5"><h1>Baranggay Voters List System </h1></div>
       <div class="search-box mb-4">
         <div class="input-group">
           <input
