@@ -145,7 +145,7 @@
 			<footer class="footer bg-light mt-4">
 			<div class="container text-center">
 				<span class="text-muted"
-				>Search Landing &copy; 2023. All rights reserved.</span
+				>Search Landing &copy; 2023. All rights reserved..</span
 				>
 			
 	</div>
