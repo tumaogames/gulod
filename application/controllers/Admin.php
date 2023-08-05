@@ -10,8 +10,3 @@ class Admin extends CI_Controller {
 
     // Add other methods for handling admin panel functionality as needed.
 }
-
-$route['default_controller'] = 'welcome';
-$route['gulod/admin'] = 'admin';
-$route['404_override'] = '';
-$route['translate_uri_dashes'] = FALSE;
