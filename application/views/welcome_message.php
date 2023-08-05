@@ -93,7 +93,76 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
     <!-- Results list goes here -->
     <div class="results-list">
-      <!-- Your results content will go here -->fdgdfgdfg
+      <!-- Sample Result Item 1 -->
+  <div class="card mb-3" style="max-width: 400px;">
+    <div class="row g-0">
+      <div class="col-md-4">
+        <img
+          src="https://via.placeholder.com/150"
+          alt="Sample Image"
+          class="img-fluid"
+        />
+      </div>
+      <div class="col-md-8">
+        <div class="card-body">
+          <h5 class="card-title">Sample Result Item 1</h5>
+          <p class="card-text">
+            This is a sample result description for Item 1. Lorem ipsum
+            dolor sit amet, consectetur adipiscing elit.
+          </p>
+          <a href="#" class="btn btn-primary">View</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sample Result Item 2 -->
+  <div class="card mb-3" style="max-width: 400px;">
+    <div class="row g-0">
+      <div class="col-md-4">
+        <img
+          src="https://via.placeholder.com/150"
+          alt="Sample Image"
+          class="img-fluid"
+        />
+      </div>
+      <div class="col-md-8">
+        <div class="card-body">
+          <h5 class="card-title">Sample Result Item 2</h5>
+          <p class="card-text">
+            This is a sample result description for Item 2. Ut enim ad
+            minim veniam, quis nostrud exercitation ullamco laboris nisi
+            ut aliquip ex ea commodo consequat.
+          </p>
+          <a href="#" class="btn btn-primary">View</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sample Result Item 3 -->
+  <div class="card mb-3" style="max-width: 400px;">
+    <div class="row g-0">
+      <div class="col-md-4">
+        <img
+          src="https://via.placeholder.com/150"
+          alt="Sample Image"
+          class="img-fluid"
+        />
+      </div>
+      <div class="col-md-8">
+        <div class="card-body">
+          <h5 class="card-title">Sample Result Item 3</h5>
+          <p class="card-text">
+            This is a sample result description for Item 3. Duis aute
+            irure dolor in reprehenderit in voluptate velit esse cillum
+            dolore eu fugiat nulla pariatur.
+          </p>
+          <a href="#" class="btn btn-primary">View</a>
+        </div>
+      </div>
+    </div>
+  </div>
     </div>
 
     <!-- Footer -->
