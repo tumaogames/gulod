@@ -94,6 +94,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <!-- Results list goes here -->
     <div class="results-list">
       <!-- Sample Data -->
+	  <div class="row">
   <?php
   // Sample data for pagination demonstration
   $totalItems = 15; // Total number of items
@@ -147,6 +148,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
           >Search Landing &copy; 2023. All rights reserved.</span
         >
       </div>
+	</div>
     </footer>
 
     <!-- Bootstrap JS (Make sure to include jQuery and Popper.js before Bootstrap) -->
