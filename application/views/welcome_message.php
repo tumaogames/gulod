@@ -94,7 +94,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <!-- Results list goes here -->
     <div class="results-list">
       <!-- Sample Data -->
-	  <div class="row">
+	  <div class="row bg-primary">
 		<?php
 		// Sample data for pagination demonstration
 		$totalItems = 15; // Total number of items
