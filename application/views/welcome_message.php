@@ -93,76 +93,51 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
     <!-- Results list goes here -->
     <div class="results-list">
-      <!-- Sample Result Item 1 -->
-  <div class="card mb-3" style="max-width: 400px;">
-    <div class="row g-0">
-      <div class="col-md-4">
-        <img
-          src="https://via.placeholder.com/150"
-          alt="Sample Image"
-          class="img-fluid"
-        />
-      </div>
-      <div class="col-md-8">
-        <div class="card-body">
-          <h5 class="card-title">Sample Result Item 1</h5>
-          <p class="card-text">
-            This is a sample result description for Item 1. Lorem ipsum
-            dolor sit amet, consectetur adipiscing elit.
-          </p>
-          <a href="#" class="btn btn-primary">View</a>
-        </div>
-      </div>
-    </div>
-  </div>
+      <!-- Sample Data -->
+  <?php
+  // Sample data for pagination demonstration
+  $totalItems = 15; // Total number of items
+  $itemsPerPage = 5; // Number of items per page
+  $currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+  $totalPages = ceil($totalItems / $itemsPerPage);
+  $startItem = ($currentPage - 1) * $itemsPerPage;
 
-  <!-- Sample Result Item 2 -->
-  <div class="card mb-3" style="max-width: 400px;">
-    <div class="row g-0">
-      <div class="col-md-4">
-        <img
-          src="https://via.placeholder.com/150"
-          alt="Sample Image"
-          class="img-fluid"
-        />
-      </div>
-      <div class="col-md-8">
-        <div class="card-body">
-          <h5 class="card-title">Sample Result Item 2</h5>
-          <p class="card-text">
-            This is a sample result description for Item 2. Ut enim ad
-            minim veniam, quis nostrud exercitation ullamco laboris nisi
-            ut aliquip ex ea commodo consequat.
-          </p>
-          <a href="#" class="btn btn-primary">View</a>
-        </div>
-      </div>
-    </div>
-  </div>
+  // Sample data array
+  $sampleData = array();
+  for ($i = $startItem; $i < min($startItem + $itemsPerPage, $totalItems); $i++) {
+    $sampleData[] = array(
+      'id' => $i + 1,
+      'name' => 'Sample Item ' . ($i + 1),
+    );
+  }
 
-  <!-- Sample Result Item 3 -->
-  <div class="card mb-3" style="max-width: 400px;">
-    <div class="row g-0">
-      <div class="col-md-4">
-        <img
-          src="https://via.placeholder.com/150"
-          alt="Sample Image"
-          class="img-fluid"
-        />
-      </div>
-      <div class="col-md-8">
-        <div class="card-body">
-          <h5 class="card-title">Sample Result Item 3</h5>
-          <p class="card-text">
-            This is a sample result description for Item 3. Duis aute
-            irure dolor in reprehenderit in voluptate velit esse cillum
-            dolore eu fugiat nulla pariatur.
-          </p>
-          <a href="#" class="btn btn-primary">View</a>
-        </div>
-      </div>
-    </div>
-  </div>
+  // Display the sample data in a table
+  if (!empty($sampleData)) {
+    echo '<table class="table table-striped">';
+    echo '<thead><tr><th>ID</th><th>Name</th></tr></thead>';
+    echo '<tbody>';
+    foreach ($sampleData as $item) {
+      echo '<tr>';
+      echo '<td>' . $item['id'] . '</td>';
+      echo '<td>' . $item['name'] . '</td>';
+      echo '</tr>';
+    }
+    echo '</tbody></table>';
+  }
+  ?>
+
+  <!-- Pagination -->
+  <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+      <?php
+      // Generate pagination links
+      for ($i = 1; $i <= $totalPages; $i++) {
+        $activeClass = $i === $currentPage ? ' active' : '';
+        echo '<li class="page-item' . $activeClass . '"><a class="page-link" href="?page=' . $i . '">' . $i . '</a></li>';
+      }
+      ?>
+    </ul>
+  </nav>
     </div>
 
     <!-- Footer -->
