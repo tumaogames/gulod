@@ -93,7 +93,7 @@
     <!-- Results list goes here -->
     <div class="results-list">
       <!-- Sample Data -->
-	  <div class="row bg-primary">
+	  <div class="row">
 		<?php
 		// Sample data for pagination demonstration
 		$totalItems = 15; // Total number of items
