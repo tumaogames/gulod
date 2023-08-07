@@ -321,7 +321,7 @@
     $('.view-card-btn').click(function(e) {
       e.preventDefault();
       var voterID = $(this).data('voter-id');
-      var voterName = "John Does"; // Replace with actual voter name fetched from your data
+      var voterName = "John Doe"; // Replace with actual voter name fetched from your data
       var voterAddress = "Sample Address"; // Replace with actual voter address fetched from your data
       var voterPrecinct = "1234"; // Replace with actual voter precinct number fetched from your data
       var voterClusteredPrecinct = "5678"; // Replace with actual voter clustered precinct fetched from your data
