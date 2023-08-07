@@ -58,6 +58,41 @@
       .three-times-height {
         height: 300%;
       }
+      /* Adjust the width and styles of the pagination container and its children as needed */
+  .pagination-container {
+    display: flex;
+    flex-wrap: wrap; /* This will make the list stack when it exceeds the container width */
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px; /* Add some margin for spacing */
+  }
+
+  .pagination-container .pagination {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+  }
+
+  .pagination-container .pagination li {
+    margin: 0 5px; /* Add some margin between each pagination item */
+  }
+
+  .pagination-container .pagination li.active a {
+    background-color: #007bff; /* Example: You can change this to style the active page */
+    color: #fff; /* Example: You can change this to style the active page */
+    border-radius: 5px;
+    padding: 5px 10px;
+  }
+    /* Optional: Add custom styles to the modal if needed */
+    #image-view-modal .modal-dialog {
+    max-width: 90%;
+  }
+
+  #modal-image {
+    max-width: 100%;
+    height: auto;
+  }
     </style>
   </head>
 
@@ -127,8 +162,49 @@
 
     <!-- Results list goes here -->
     <div class="results-list">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- "View Information Card" link with Bootstrap button class -->
+    
+
+    <!-- Image view modal -->
+    <div id="image-view-modal" class="modal fade" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Voter Information</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-4">
+                <img id="modal-image" src="" class="img-fluid" alt="Voter Image">
+              </div>
+              <div class="col-md-8">
+                <p><strong>Name:</strong> <span id="voter-name"></span></p>
+                <p><strong>Address:</strong> <span id="voter-address"></span></p>
+                <p><strong>Precinct No:</strong> <span id="voter-precinct"></span></p>
+                <p><strong>Clustered Precinct:</strong> <span id="voter-clustered-precinct"></span></p>
+                <!-- Add more voter information fields as needed -->
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <!-- Optionally, you can include a print button as well -->
+            <!-- Print button -->
+            <button id="print-button" class="btn btn-primary">Print</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
   <!-- Query Results -->
-  <div class="row">
+  <div class="col">
   <?php
     // Get the query results from the model method
     if (!empty($votersName)) {
@@ -150,12 +226,16 @@
       echo '<table class="table table-striped">';
       echo '<thead><tr><th>Voters Name</th><th>Address</th><th></th></tr></thead>';
       echo '<tbody>';
-      for ($i = 0; $i < count($sampleData); $i++) {
-          echo '<tr>';
-          echo '<td>' . $sampleData[$i]->voters_name . '</td>';
-          echo '<td>' . $sampleData[$i]->address . '</td>';
-          echo '<td><a href="voter-info.php?id=' . $sampleData[$i]->id . '" class="btn btn-info">View Information Card</a></td>';
-          echo '</tr>';
+      foreach ($sampleData as $voter) {
+        $voterID = $voter->id;
+        $voterName = $voter->voters_name;
+        $voterAddress = $voter->address;
+    
+        echo '<tr>';
+        echo '<td>' . $voterName . '</td>';
+        echo '<td>' . $voterAddress . '</td>';
+        echo '<td><a href="#" class="btn btn-info view-card-btn" data-toggle="modal" data-target="#image-view-modal" data-voter-id="' . $voterID . '">View Information Card</a></td>';
+        echo '</tr>';
       }
       echo '</tbody></table>';
     } else {
@@ -165,14 +245,37 @@
     // Pagination
     if ($totalPages > 1) {
       echo '<nav aria-label="Page navigation">';
-      echo '<ul class="pagination justify-content-center">';
-      for ($i = 1; $i <= $totalPages; $i++) {
-          $activeClass = $i === $currentPage ? ' active' : '';
-          $queryString = !empty($votersName) ? '&votersName=' . urlencode($votersName) : '';
-          $prevQueryString = !empty($votersName) ? '&prevVotersName=' . urlencode($votersName) : '';
-          $startItemValue = ($i - 1) * $itemsPerPage;
-          echo '<li class="page-item' . $activeClass . '"><a class="page-link" href="?page=' . $i . '&startItem=' . $startItemValue . $queryString . $prevQueryString . '">' . $i . '</a></li>';
+      echo '<ul class="row pagination justify-content-center">';
+
+      // Previous button
+      $prevPage = $currentPage - 1;
+      if ($prevPage > 0) {
+        $queryString = !empty($votersName) ? '&votersName=' . urlencode($votersName) : '';
+        $prevQueryString = !empty($votersName) ? '&prevVotersName=' . urlencode($votersName) : '';
+        $startItemValue = ($prevPage - 1) * $itemsPerPage;
+        echo '<li class="page-item"><a class="page-link" href="?page=' . $prevPage . '&startItem=' . $startItemValue . $queryString . $prevQueryString . '">&lt;</a></li>';
       }
+
+      // Display 10 pagination buttons (adjust this based on your preference)
+      $startPage = max(1, $currentPage - 5);
+      $endPage = min($totalPages, $startPage + 9);
+      for ($i = $startPage; $i <= $endPage; $i++) {
+        $activeClass = $i === $currentPage ? ' active' : '';
+        $queryString = !empty($votersName) ? '&votersName=' . urlencode($votersName) : '';
+        $prevQueryString = !empty($votersName) ? '&prevVotersName=' . urlencode($votersName) : '';
+        $startItemValue = ($i - 1) * $itemsPerPage;
+        echo '<li class="page-item' . $activeClass . '"><a class="page-link" href="?page=' . $i . '&startItem=' . $startItemValue . $queryString . $prevQueryString . '">' . $i . '</a></li>';
+      }
+
+      // Next button
+      $nextPage = $currentPage + 1;
+      if ($nextPage <= $totalPages) {
+        $queryString = !empty($votersName) ? '&votersName=' . urlencode($votersName) : '';
+        $prevQueryString = !empty($votersName) ? '&prevVotersName=' . urlencode($votersName) : '';
+        $startItemValue = ($nextPage - 1) * $itemsPerPage;
+        echo '<li class="page-item"><a class="page-link" href="?page=' . $nextPage . '&startItem=' . $startItemValue . $queryString . $prevQueryString . '">&gt;</a></li>';
+      }
+
       echo '</ul>';
       echo '</nav>';
     }
@@ -187,6 +290,46 @@
           </div>
         </div>
       </footer>
+      <!-- Include jQuery library -->
+<!-- Include jQuery library -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Include Bootstrap JS (popper.js is also required if using Bootstrap's dropdowns, tooltips, or popovers) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+<script>
+   // Function to show the voter information in the modal
+  function showImageView(voterID, voterName, voterAddress, voterPrecinct, voterClusteredPrecinct) {
+    // Here, you should fetch the image URL based on the voterID.
+    // For demonstration purposes, we'll use a static image URL.
+    var imageURL = 'path/to/image/' + voterID + '.jpg';
+    $('#modal-image').attr('src', imageURL);
+    $('#voter-name').text(voterName);
+    $('#voter-address').text(voterAddress);
+    $('#voter-precinct').text(voterPrecinct);
+    $('#voter-clustered-precinct').text(voterClusteredPrecinct);
+
+    // Show the image view modal
+    $('#image-view-modal').modal('show');
+  }
+
+  // Attach event listeners to the buttons
+  $(document).ready(function() {
+    // When any "View Information Card" link is clicked
+    $('.view-card-btn').click(function(e) {
+      e.preventDefault();
+      var voterID = $(this).data('voter-id');
+      var voterName = "John Doe"; // Replace with actual voter name fetched from your data
+      var voterAddress = "Sample Address"; // Replace with actual voter address fetched from your data
+      var voterPrecinct = "1234"; // Replace with actual voter precinct number fetched from your data
+      var voterClusteredPrecinct = "5678"; // Replace with actual voter clustered precinct fetched from your data
+      showImageView(voterID, voterName, voterAddress, voterPrecinct, voterClusteredPrecinct);
+    });
+  });
+</script>
+
     </div>
     </div>
   </div>
