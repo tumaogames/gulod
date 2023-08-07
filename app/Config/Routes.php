@@ -32,7 +32,13 @@ $routes->setAutoRoute(true);
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 $routes->get('/', 'Home::index');
-$routes->get('/admin', 'Admin::index');
+$routes->get('admin_login', 'ViewController::showLoginPage');
+$routes->get('admin_register', 'ViewController::showRegistrationPage');
+$routes->post('register_user', 'AuthController::register');
+$routes->post('login_user', 'AuthController::login');
+$routes->add('success_page', 'ViewController::showSuccessPage');
+$routes->add('dashboard_page', 'ViewController::showDashboardPage');
+$routes->post('excel', 'ExcelController::upload');
 
 /*
  * --------------------------------------------------------------------

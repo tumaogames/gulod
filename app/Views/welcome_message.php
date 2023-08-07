@@ -62,98 +62,133 @@
   </head>
 
   <body>
+  <div class="container">
+  <div class="row justify-content-center">
+  <div class="col-md-8">
+    <?php
+      error_reporting(E_ALL);
+      ini_set('display_errors', 1);
+
+      use App\Models\VoterModel; // Load the VotersModel
+
+      $totalPages = 0;
+      $votersName = isset($_GET['votersName']) ? $_GET['votersName'] : '';
+      if (!empty($_POST['prevVotersName'])) {
+          $votersName = $_GET['prevVotersName'];
+      }
+      $sampleData = [];
+
+      if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['votersName'])) {
+          // Check if the form was submitted using POST method and votersName is set
+          $votersName = $_GET['votersName'];
+      }
+
+      $votersModel = new VoterModel();
+    ?>
     <!-- Navigation bar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <a class="navbar-brand" href="#">Barangay Gulod</a>
       <!-- Add additional navigation items if needed -->
     </nav>
 
-    <!-- Main content -->
     <div class="search-container">
-      <div class="p-5"><h1>Barangay Voters List System </h1></div>
+      <div class="p-5">
+        <h1>Barangay Voters List System</h1>
+      </div>
       <div class="search-box mb-4">
-        <div class="input-group">
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Enter Full Name here"
-            aria-label="Search term"
-            aria-describedby="search-btn"
-          />
-          <div class="input-group-append">
-            <button class="btn btn-primary" type="button" id="search-btn">
-              Search
-            </button>
+        <form action="<?= $_SERVER['REQUEST_URI']; ?>" method="get">
+          <?= csrf_field() ?>
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Enter Full Name here"
+              aria-label="Search term"
+              aria-describedby="search-btn"
+              name="votersName"
+              value="<?= isset($_GET['votersName']) ? htmlspecialchars($_GET['votersName']) : ''; ?>"
+            />
+            <div class="input-group-append">
+              <button class="btn btn-primary" type="submit" id="search-btn">
+                Search
+              </button>
+            </div>
           </div>
-        </div>
+          <?php if (!empty($_GET['votersName'])) { ?>
+            <input type="hidden" name="prevVotersName" value="<?= htmlspecialchars($_GET['votersName']); ?>">
+          <?php } else if (!empty($_GET['prevVotersName'])) { ?>
+            <input type="hidden" name="prevVotersName" value="<?= htmlspecialchars($_GET['prevVotersName']); ?>">
+          <?php } ?>
+        </form>
       </div>
     </div>
 
+
+
     <!-- Results list goes here -->
     <div class="results-list">
-      <!-- Sample Data -->
-	  <div class="row">
-		<?php
-		// Sample data for pagination demonstration
-		$totalItems = 15; // Total number of items
-		$itemsPerPage = 5; // Number of items per page
-		$currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
-		$totalPages = ceil($totalItems / $itemsPerPage);
-		$startItem = ($currentPage - 1) * $itemsPerPage;
+  <!-- Query Results -->
+  <div class="row">
+  <?php
+    // Get the query results from the model method
+    if (!empty($votersName)) {
+        $sampleData = $votersModel->getVotersByVotersName($votersName);
+        $totalItems = count($sampleData);
+        $itemsPerPage = 10;
+        $currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+        $startItem = isset($_GET['startItem']) ? intval($_GET['startItem']) : ($currentPage - 1) * $itemsPerPage;
+        $totalPages = ceil($totalItems / $itemsPerPage);
+        // Adjust the data to display based on the current page and items per page
+        $sampleData = array_slice($sampleData, $startItem, $itemsPerPage);
+    }
 
-		// Sample data array
-		$sampleData = array();
-		for ($i = $startItem; $i < min($startItem + $itemsPerPage, $totalItems); $i++) {
-			$sampleData[] = array(
-			'id' => $i + 1,
-			'name' => 'Sample Full Name ' . ($i + 1),
-			);
-		}
+    // Display the data in a table
+    //print_r($sampleData);
+    //die();
+    // Display the data in a table
+    if (!empty($sampleData)) {
+      echo '<table class="table table-striped">';
+      echo '<thead><tr><th>Voters Name</th><th>Address</th><th></th></tr></thead>';
+      echo '<tbody>';
+      for ($i = 0; $i < count($sampleData); $i++) {
+          echo '<tr>';
+          echo '<td>' . $sampleData[$i]->voters_name . '</td>';
+          echo '<td>' . $sampleData[$i]->address . '</td>';
+          echo '<td><a href="voter-info.php?id=' . $sampleData[$i]->id . '" class="btn btn-info">View Information Card</a></td>';
+          echo '</tr>';
+      }
+      echo '</tbody></table>';
+    } else {
+      echo '<p>No data found.</p>';
+    }
 
-		// Display the sample data in a table
-		if (!empty($sampleData)) {
-			echo '<table class="table table-striped">';
-			echo '<thead><tr><th>ID</th><th>Name</th></tr></thead>';
-			echo '<tbody>';
-			foreach ($sampleData as $item) {
-			echo '<tr>';
-			echo '<td>' . $item['id'] . '</td>';
-			echo '<td>' . $item['name'] . '</td>';
-			echo '<td><button class="btn btn-info" onclick="showInfoCard(' . $item['id'] . ')">View Information Card</button></td>';
-			echo '</tr>';
-			}
-			echo '</tbody></table>';
-		}
-		?>
-
-		<!-- Pagination -->
-		<nav aria-label="Page navigation">
-			<ul class="pagination justify-content-center">
-			<?php
-			// Generate pagination links
-			for ($i = 1; $i <= $totalPages; $i++) {
-				$activeClass = $i === $currentPage ? ' active' : '';
-				echo '<li class="page-item' . $activeClass . '"><a class="page-link" href="?page=' . $i . '">' . $i . '</a></li>';
-			}
-			?>
-			</ul>
-		</nav>
-		</div>
-			</div>
-
-			<!-- Footer -->
-			<footer class="footer bg-light mt-4">
-			<div class="container text-center">
-				<span class="text-muted"
-				>Search Landing &copy; 2023. All rights reserved.</span
-				>
-			
-	</div>
-    </footer>
-
-    <!-- Bootstrap JS (Make sure to include jQuery and Popper.js before Bootstrap) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  </body>
-</html>
+    // Pagination
+    if ($totalPages > 1) {
+      echo '<nav aria-label="Page navigation">';
+      echo '<ul class="pagination justify-content-center">';
+      for ($i = 1; $i <= $totalPages; $i++) {
+          $activeClass = $i === $currentPage ? ' active' : '';
+          $queryString = !empty($votersName) ? '&votersName=' . urlencode($votersName) : '';
+          $prevQueryString = !empty($votersName) ? '&prevVotersName=' . urlencode($votersName) : '';
+          $startItemValue = ($i - 1) * $itemsPerPage;
+          echo '<li class="page-item' . $activeClass . '"><a class="page-link" href="?page=' . $i . '&startItem=' . $startItemValue . $queryString . $prevQueryString . '">' . $i . '</a></li>';
+      }
+      echo '</ul>';
+      echo '</nav>';
+    }
+    ?>
+      <div class="col-12 p-0">
+      <footer class="footer bg-light text-center">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-12">
+              Search Landing &copy; 2023. All rights reserved.
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+    </div>
+  </div>
+</div>
+</div>

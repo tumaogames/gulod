@@ -23,6 +23,18 @@ class Gulod extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => 30,
             ],
+            'address' => [
+                'type' => 'VARCHAR',
+                'constraint' => 30,
+            ],
+            'precinct_no' => [
+                'type' => 'VARCHAR',
+                'constraint' => 30,
+            ],
+            'clustered_precinct' => [
+                'type' => 'VARCHAR',
+                'constraint' => 30,
+            ],
             'created_at' => [
                 'type' => 'DATETIME',
                 'null' => true,

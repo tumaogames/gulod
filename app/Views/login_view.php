@@ -9,11 +9,22 @@
 </head>
 
 <body>
+        <!-- Display validation errors -->
+        <?php if (session()->getFlashdata('errors')): ?>
+        <div class="alert alert-danger">
+            <ul>
+            <?php foreach (session()->getFlashdata('errors') as $error): ?>
+                <li><?= esc($error) ?></li>
+            <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php endif; ?>
     <div class="container mt-5">
         <div class="row justify-content-center p-5">
             <div class="col-md-4">
                 <h2 class="text-center mb-4">Admin Panel Login.</h2>
-                <form id="loginForm">
+                <form id="loginForm" method="post" action="/login_user">
+                    <?= csrf_field() ?>
                     <div class="form-group">
                         <label for="username">Username</label>
                         <input type="text" class="form-control" id="username" name="username" required>
@@ -22,6 +33,7 @@
                         <label for="password">Password</label>
                         <input type="password" class="form-control" id="password" name="password" required>
                     </div>
+                    <div><a href="/admin_register">Register</a></div>
                     <button type="submit" class="btn btn-primary btn-block">Login</button>
                 </form>
             </div>
