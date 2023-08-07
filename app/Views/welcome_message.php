@@ -182,7 +182,7 @@
         <div class="container-fluid">
           <div class="row">
             <div class="col-12">
-              Search Landing &copy; 2023. All rights reserved.
+              Search Landing &copy; 2023.. All rights reserved.
             </div>
           </div>
         </div>
