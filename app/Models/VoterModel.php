@@ -23,7 +23,6 @@ class VoterModel extends Model
 
     // ...
 
-    // Rest of your model code
     public function getVotersByVotersName($votersName)
     {
         // Check if $votersName is a valid string before proceeding
@@ -36,11 +35,11 @@ class VoterModel extends Model
             // Explode the search term into an array of words
             $nameParts = explode(' ', $votersName);
     
-            // Create a variable to store the query results
-            $results = [];
-    
-            // Use the Query Builder to perform a partial, case-insensitive search using LIKE with wildcards
+            // Use the Query Builder to perform an exact match search
             $query = $this->db->table('gulod'); // Replace 'gulod' with your actual table name
+    
+            // Create a variable to store the results
+            $results = [];
     
             // Iterate through each row in the table
             foreach ($query->get()->getResult() as $row) {
@@ -57,8 +56,11 @@ class VoterModel extends Model
                     }
                 }
     
-                // If at least two words match, add the row to the results
-                if ($matchingWords >= 2) {
+                // Check if the exact full name is an exact match
+                $exactMatch = (stripos($row->voters_name, $votersName) !== false);
+    
+                // Add the row to the results if it is an exact match or has at least two matching words
+                if ($exactMatch || $matchingWords >= 2) {
                     $results[] = $row;
                 }
             }
@@ -70,6 +72,8 @@ class VoterModel extends Model
             return [];
         }
     }
+    
+    
     
 
     public function getVotersByPrecinct($precinctNo)
