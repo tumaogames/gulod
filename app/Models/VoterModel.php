@@ -26,23 +26,51 @@ class VoterModel extends Model
     // Rest of your model code
     public function getVotersByVotersName($votersName)
     {
-        // Check if $votersName is a valid string before calling the like() method
+        // Check if $votersName is a valid string before proceeding
         if ($votersName !== null && is_string($votersName)) {
             // Convert the search term to lowercase
             $votersName = strtolower($votersName);
+            // Remove any commas from the search term
+            $votersName = str_replace(',', '', $votersName);
+    
+            // Explode the search term into an array of words
+            $nameParts = explode(' ', $votersName);
+    
+            // Create a variable to store the query results
+            $results = [];
+    
             // Use the Query Builder to perform a partial, case-insensitive search using LIKE with wildcards
-                $query = $this->table('gulod') // Replace 'gulod' with your actual table name
-                ->like('LOWER(voters_name)', $votersName, 'both')
-                ->get();
-
+            $query = $this->db->table('gulod'); // Replace 'gulod' with your actual table name
+    
+            // Iterate through each row in the table
+            foreach ($query->get()->getResult() as $row) {
+                // Count the number of matching words in the full name
+                $matchingWords = 0;
+                foreach ($nameParts as $part) {
+                    if (strlen($part) < 3) {
+                        // Skip empty or short words
+                        continue;
+                    }
+                    // Check if the part exists in the full name (case-insensitive)
+                    if (stripos($row->voters_name, $part) !== false) {
+                        $matchingWords++;
+                    }
+                }
+    
+                // If at least two words match, add the row to the results
+                if ($matchingWords >= 2) {
+                    $results[] = $row;
+                }
+            }
+    
             // Return the results as an array of objects
-            return $query->getResult();
+            return $results;
         } else {
             // If $votersName is not a valid string, set it to an empty string to avoid null
             return [];
         }
     }
-
+    
 
     public function getVotersByPrecinct($precinctNo)
     {
