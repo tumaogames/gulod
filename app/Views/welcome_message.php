@@ -227,19 +227,21 @@
       echo '<thead><tr><th>Voters Name</th><th>Address</th><th></th></tr></thead>';
       echo '<tbody>';
       foreach ($sampleData as $voter) {
-        $voterID = $voter->id;
-        $voterName = $voter->voters_name;
-        $voterAddress = $voter->address;
-    
-        echo '<tr>';
-        echo '<td>' . $voterName . '</td>';
-        echo '<td>' . $voterAddress . '</td>';
-        echo '<td><a href="#" class="btn btn-info view-card-btn" data-toggle="modal" data-target="#image-view-modal" data-voter-id="' . $voterID . '">View Information Card</a></td>';
-        echo '</tr>';
+          $voterID = $voter->id;
+          $voterName = $voter->voters_name;
+          $voterAddress = $voter->address;
+          $voterPrecinct = $voter->precinct_no;
+          $voterClusteredPrecinct = $voter->clustered_precinct;
+      
+          echo '<tr>';
+          echo '<td>' . $voterName . '</td>';
+          echo '<td>' . $voterAddress . '</td>';
+          echo '<td><a href="#" class="btn btn-info view-card-btn" data-toggle="modal" data-target="#image-view-modal" data-voter-id="' . $voterID . '" data-voter-name="' . $voterName . '" data-voter-address="' . $voterAddress . '" data-voter-precinct="' . $voterPrecinct . '" data-voter-clustered-precinct="' . $voterClusteredPrecinct . '">View Information Card</a></td>';
+          echo '</tr>';
       }
       echo '</tbody></table>';
     } else {
-      echo '<p>No data found.</p>';
+        echo '<p>No data found.</p>';
     }
 
     // Pagination
@@ -317,17 +319,18 @@
 
   // Attach event listeners to the buttons
   $(document).ready(function() {
-    // When any "View Information Card" link is clicked
-    $('.view-card-btn').click(function(e) {
-      e.preventDefault();
-      var voterID = $(this).data('voter-id');
-      var voterName = "John Doeds"; // Replace with actual voter name fetched from your data
-      var voterAddress = "Sample Address"; // Replace with actual voter address fetched from your data
-      var voterPrecinct = "1234"; // Replace with actual voter precinct number fetched from your data
-      var voterClusteredPrecinct = "5678"; // Replace with actual voter clustered precinct fetched from your data
-      showImageView(voterID, voterName, voterAddress, voterPrecinct, voterClusteredPrecinct);
+        // When any "View Information Card" link is clicked
+        $('.view-card-btn').click(function(e) {
+            e.preventDefault();
+            var voterID = $(this).data('voter-id');
+            var voterName = $(this).data('voter-name');
+            var voterAddress = $(this).data('voter-address');
+            var voterPrecinct = $(this).data('voter-precinct');
+            var voterClusteredPrecinct = $(this).data('voter-clustered-precinct');
+            
+            showImageView(voterID, voterName, voterAddress, voterPrecinct, voterClusteredPrecinct);
+        });
     });
-  });
 </script>
 
     </div>
