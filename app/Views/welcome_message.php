@@ -182,7 +182,7 @@
     
 
     <!-- Image view modal -->
-    <div id="image-view-modal" class="modal fade p-0" tabindex="-1" role="dialog">
+    <div id="image-view-modal" class="modal fade" tabindex="-1" role="dialog">
       <div class="modal-dialog modal-dialog-centered custom-modal-dialog"">
         <div class="modal-content">
           <div class="modal-header">
