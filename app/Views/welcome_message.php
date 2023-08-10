@@ -273,7 +273,7 @@
           <div class="modal-body p-0">
             <div class="container-fluid">
               <div class="row mt-4" >
-                <div class="col-md-8 offset-2 table-responsive">
+                <div class="col-10 offset-2 table-responsive">
                   <table class="table table-borderless">
                     <tr>
                       <th>Name:</th>
