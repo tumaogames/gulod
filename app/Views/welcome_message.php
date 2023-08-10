@@ -105,7 +105,7 @@
           background-repeat: no-repeat;
           background-position: center center;
           width: 100%;
-          font-size: 9px;
+          font-size: 8px;
           padding: 0;
         }
 }
@@ -273,23 +273,23 @@
           <div class="modal-body p-0">
             <div class="container-fluid">
               <div class="row mt-4" >
-                <div class="col-10 offset-2 table-responsive">
+                <div class="col-10 offset-2 table-responsive pl-sm-5">
                   <table class="table table-borderless">
                     <tr>
-                      <th>Name:</th>
-                      <td><span id="voter-name" class="styled-data"></span></td>
+                      <th style="width: 35%;">Name:</th>
+                      <td class="px-0"><span id="voter-name" class="styled-data"></span></td>
                     </tr>
                     <tr>
                       <th>Address:</th>
-                      <td><span id="voter-address" class="styled-data"></span></td>
+                      <td class="px-0"><span id="voter-address" class="styled-data"></span></td>
                     </tr>
                     <tr>
                       <th>Precinct No:</th>
-                      <td><span id="voter-precinct" class="styled-data"></span></td>
+                      <td class="px-0"><span id="voter-precinct" class="styled-data"></span></td>
                     </tr>
                     <tr>
                       <th>Clustered Precinct:</th>
-                      <td><span id="voter-clustered-precinct" class="styled-data"></span></td>
+                      <td class="px-0"><span id="voter-clustered-precinct" class="styled-data"></span></td>
                     </tr>
                     <!-- Add more voter information rows as needed -->
                   </table>
