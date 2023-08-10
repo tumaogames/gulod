@@ -93,6 +93,19 @@
     max-width: 100%;
     height: auto;
   }
+
+    /* Custom CSS for modal width */
+  #image-view-modal .custom-modal-dialog {
+    max-width: 50%; /* Default width for larger devices */
+  }
+
+  /* Media query for mobile devices (max-width: 767px) */
+  @media (max-width: 767px) {
+    #image-view-modal .custom-modal-dialog {
+      max-width: 100%; /* Full width for mobile devices */
+    }
+  }
+
     </style>
   </head>
 
@@ -169,8 +182,8 @@
     
 
     <!-- Image view modal -->
-    <div id="image-view-modal" class="modal fade" tabindex="-1" role="dialog">
-      <div class="modal-dialog modal-dialog-centered">
+    <div id="image-view-modal" class="modal fade p-0" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-dialog-centered custom-modal-dialog"">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Voter Information</h5>
@@ -183,7 +196,7 @@
               <div class="col-md-4">
                 <img id="modal-image" src="" class="img-fluid" alt="Voter Image">
               </div>
-              <div class="col-md-8">
+              <div class="col-md-4">
                 <p><strong>Name:</strong> <span id="voter-name"></span></p>
                 <p><strong>Address:</strong> <span id="voter-address"></span></p>
                 <p><strong>Precinct No:</strong> <span id="voter-precinct"></span></p>
@@ -240,9 +253,9 @@
           echo '</tr>';
       }
       echo '</tbody></table>';
-    } else {
-        echo '<p>No data found.</p>';
-    }
+  } else {
+      echo '<p>No data found.</p>';
+  }
 
     // Pagination
     if ($totalPages > 1) {
