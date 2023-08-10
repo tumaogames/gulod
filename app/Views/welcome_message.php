@@ -236,8 +236,9 @@
     //die();
     // Display the data in a table
     if (!empty($sampleData)) {
+      echo '<div class="table-responsive">';
       echo '<table class="table table-striped">';
-      echo '<thead><tr><th>Voters Name</th><th>Address</th><th></th></tr></thead>';
+      echo '<thead><tr><th><p class="text-xs">Voters Name</p></th><th><p class="text-xs">Address</p></th><th></th></tr></thead>';
       echo '<tbody>';
       foreach ($sampleData as $voter) {
           $voterID = $voter->id;
@@ -247,12 +248,13 @@
           $voterClusteredPrecinct = $voter->clustered_precinct;
       
           echo '<tr>';
-          echo '<td>' . $voterName . '</td>';
-          echo '<td>' . $voterAddress . '</td>';
+          echo '<td><p class="text-xs">' . $voterName . '</p></td>';
+          echo '<td><p class="text-xs">' . $voterAddress . '</p></td>';
           echo '<td><a href="#" class="btn btn-info view-card-btn" data-toggle="modal" data-target="#image-view-modal" data-voter-id="' . $voterID . '" data-voter-name="' . $voterName . '" data-voter-address="' . $voterAddress . '" data-voter-precinct="' . $voterPrecinct . '" data-voter-clustered-precinct="' . $voterClusteredPrecinct . '">View Information Card</a></td>';
           echo '</tr>';
       }
       echo '</tbody></table>';
+      echo '</div>';
   } else {
       echo '<p>No data found.</p>';
   }
