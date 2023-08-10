@@ -144,6 +144,8 @@
         }
 }
 
+
+
 /* Media Query for screens with a minimum width of 993px and a maximum width of 1200px */
 @media (min-width: 993px) and (max-width: 1200px) {
     #image-view-modal .custom-modal-dialog {
@@ -175,7 +177,6 @@
           font-size: 24px;
         }
 }
-
   
   /* Custom CSS for styling data fields */
   .styled-data {
@@ -184,6 +185,27 @@
     border: 2px solid #007bff; /* Replace with your desired border color */
     border-radius: 5px; /* Adjust the value for rounded edges */
   }
+
+  @media print {
+    /* Set the background color of table cells to transparent */
+    .transparent-background td,
+    .transparent-background th {
+        background-color: transparent !important;
+    }
+    table td,
+    table th {
+        background-color: transparent !important;
+    }
+    @page {
+        size: landscape;
+        transform: scale(1.06); /* 106% scale */
+        transform-origin: top left; /
+    }
+    table {
+        background-color: transparent;
+    }
+    
+}
 
     </style>
   </head>
@@ -274,7 +296,7 @@
             <div class="container-fluid">
               <div class="row mt-4" >
                 <div class="col-10 offset-2 table-responsive pl-sm-5">
-                  <table class="table table-borderless">
+                  <table class="table table-borderless transparent-background">
                     <tr>
                       <th style="width: 35%;">Name:</th>
                       <td class="px-0"><span id="voter-name" class="styled-data"></span></td>
@@ -301,7 +323,7 @@
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             <!-- Optionally, you can include a print button as well -->
             <!-- Print button -->
-            <button id="print-button" class="btn btn-primary">Print</button>
+            <button id="print-button" onclick="printModal('image-view-modal')" class="btn btn-primary">Print</button>
           </div>
         </div>
       </div>
@@ -339,8 +361,8 @@
           $voterClusteredPrecinct = $voter->clustered_precinct;
       
           echo '<tr>';
-          echo '<td><p class="text-xs">' . $voterName . '</p></td>';
-          echo '<td><p class="text-xs">' . $voterAddress . '</p></td>';
+          echo '<td><p>' . $voterName . '</p></td>';
+          echo '<td><p>' . $voterAddress . '</p></td>';
           echo '<td><a href="#" class="btn btn-info view-card-btn" data-toggle="modal" data-target="#image-view-modal" data-voter-id="' . $voterID . '" data-voter-name="' . $voterName . '" data-voter-address="' . $voterAddress . '" data-voter-precinct="' . $voterPrecinct . '" data-voter-clustered-precinct="' . $voterClusteredPrecinct . '">View Information Card</a></td>';
           echo '</tr>';
       }
@@ -437,6 +459,16 @@
             showImageView(voterID, voterName, voterAddress, voterPrecinct, voterClusteredPrecinct);
         });
     });
+
+    function printModal(modalId) {
+        if (window.innerWidth >= 992) {
+            var printContents = document.getElementById(modalId).innerHTML;
+            var originalContents = document.body.innerHTML;
+            document.body.innerHTML = '<div id="printarea">' + printContents + '</div>';
+            window.print();
+            document.body.innerHTML = originalContents;
+        }
+    }
 </script>
 
     </div>
