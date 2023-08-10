@@ -84,26 +84,110 @@
     border-radius: 5px;
     padding: 5px 10px;
   }
-    /* Optional: Add custom styles to the modal if needed */
-    #image-view-modal .modal-dialog {
-    max-width: 90%;
-  }
 
-  #modal-image {
-    max-width: 100%;
-    height: auto;
-  }
 
-    /* Custom CSS for modal width */
   #image-view-modal .custom-modal-dialog {
-    max-width: 50%; /* Default width for larger devices */
+      max-width: 1050px;
+      height: 100vh;
   }
 
-  /* Media query for mobile devices (max-width: 767px) */
-  @media (max-width: 767px) {
+  #image-view-modal .custom-modal-dialog {
+    max-width: 1050px;
+    height: 100vh;
+}
+
+#image-view-modal .custom-modal-dialog {
+    max-width: 1050px;
+    height: 100vh;
+}
+
+/* Media Query for screens with a maximum width of 576px */
+@media (max-width: 576px) {
     #image-view-modal .custom-modal-dialog {
-      max-width: 100%; /* Full width for mobile devices */
+        max-width: 90%;
+        height: auto;
     }
+
+    .modal-body {
+          height: 276.67px; /* Adjust the height */
+          background-image: url('http://gulod.local/images/Card.png');
+          background-size: contain; /* Fit the background image while maintaining aspect ratio */
+          background-repeat: no-repeat;
+          background-position: center center;
+          width: 100%;
+        }
+}
+
+/* Media Query for screens with a minimum width of 577px and a maximum width of 768px */
+@media (min-width: 577px) and (max-width: 768px) {
+    #image-view-modal .custom-modal-dialog {
+        max-width: 500px; /* Adjust the value as needed */
+        height: 443.33px;
+    }
+    .modal-body {
+          height: 276.67px; /* Adjust the height */
+          background-image: url('http://gulod.local/images/Card.png');
+          background-size: contain; /* Fit the background image while maintaining aspect ratio */
+          background-repeat: no-repeat;
+          background-position: center center;
+          width: 100%;
+        }
+}
+
+/* Media Query for screens with a minimum width of 769px and a maximum width of 992px */
+@media (min-width: 769px) and (max-width: 992px) {
+    #image-view-modal .custom-modal-dialog {
+        max-width: 600px; /* Adjust the value as needed */
+        height: 276.67px;
+    }
+    .modal-body {
+          height: 332.22px; /* Adjust the height */
+          background-image: url('http://gulod.local/images/Card.png');
+          background-size: contain; /* Fit the background image while maintaining aspect ratio */
+          background-repeat: no-repeat;
+          background-position: center center;
+          width: 100%;
+        }
+}
+
+/* Media Query for screens with a minimum width of 993px and a maximum width of 1200px */
+@media (min-width: 993px) and (max-width: 1200px) {
+    #image-view-modal .custom-modal-dialog {
+        max-width: 800px; /* Adjust the value as needed */
+    }
+    .modal-body {
+          height: 443.33px; /* Adjust the height */
+          background-image: url('http://gulod.local/images/Card.png');
+          background-size: contain; /* Fit the background image while maintaining aspect ratio */
+          background-repeat: no-repeat;
+          background-position: center center;
+          width: 100%;
+        }
+}
+
+/* Media Query for screens with a minimum width of 1201px */
+@media (min-width: 1201px) {
+    #image-view-modal .custom-modal-dialog {
+        max-width: 1050px;
+        height: 100vh;
+    }
+    .modal-body {
+          height: 600px; /* Adjust the height */
+          background-image: url('http://gulod.local/images/Card.png');
+          background-size: contain; /* Fit the background image while maintaining aspect ratio */
+          background-repeat: no-repeat;
+          background-position: center center;
+          width: 100%;
+        }
+}
+
+  
+  /* Custom CSS for styling data fields */
+  .styled-data {
+
+    padding: 5px;
+    border: 2px solid #007bff; /* Replace with your desired border color */
+    border-radius: 5px; /* Adjust the value for rounded edges */
   }
 
     </style>
@@ -183,25 +267,38 @@
 
     <!-- Image view modal -->
     <div id="image-view-modal" class="modal fade" tabindex="-1" role="dialog">
-      <div class="modal-dialog modal-dialog-centered custom-modal-dialog"">
-        <div class="modal-content">
+      <div class="modal-dialog modal-dialog-centered custom-modal-dialog">
+      <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Voter Information</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body">
-            <div class="row">
-              <div class="col-md-4">
-                <img id="modal-image" src="" class="img-fluid" alt="Voter Image">
-              </div>
-              <div class="col-md-4">
-                <p><strong>Name:</strong> <span id="voter-name"></span></p>
-                <p><strong>Address:</strong> <span id="voter-address"></span></p>
-                <p><strong>Precinct No:</strong> <span id="voter-precinct"></span></p>
-                <p><strong>Clustered Precinct:</strong> <span id="voter-clustered-precinct"></span></p>
-                <!-- Add more voter information fields as needed -->
+          <div class="modal-body p-0">
+            <div class="container-fluid">
+              <div class="row" >
+                <div class="col-md-8 p-4 offset-md-2">
+                  <table class="table table-borderless">
+                    <tr>
+                      <th>Name:</th>
+                      <td><span id="voter-name" class="styled-data"></span></td>
+                    </tr>
+                    <tr>
+                      <th>Address:</th>
+                      <td><span id="voter-address" class="styled-data"></span></td>
+                    </tr>
+                    <tr>
+                      <th>Precinct No:</th>
+                      <td><span id="voter-precinct" class="styled-data"></span></td>
+                    </tr>
+                    <tr>
+                      <th>Clustered Precinct:</th>
+                      <td><span id="voter-clustered-precinct" class="styled-data"></span></td>
+                    </tr>
+                    <!-- Add more voter information rows as needed -->
+                  </table>
+                </div>
               </div>
             </div>
           </div>
@@ -214,6 +311,10 @@
         </div>
       </div>
     </div>
+
+
+
+
 
 
   <!-- Query Results -->
