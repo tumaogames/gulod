@@ -91,16 +91,6 @@
       height: 100vh;
   }
 
-  #image-view-modal .custom-modal-dialog {
-    max-width: 1050px;
-    height: 100vh;
-}
-
-#image-view-modal .custom-modal-dialog {
-    max-width: 1050px;
-    height: 100vh;
-}
-
 /* Media Query for screens with a maximum width of 576px */
 @media (max-width: 576px) {
     #image-view-modal .custom-modal-dialog {
@@ -115,6 +105,8 @@
           background-repeat: no-repeat;
           background-position: center center;
           width: 100%;
+          font-size: 9px;
+          padding: 0;
         }
 }
 
@@ -131,6 +123,7 @@
           background-repeat: no-repeat;
           background-position: center center;
           width: 100%;
+          font-size: 10px;
         }
 }
 
@@ -147,6 +140,7 @@
           background-repeat: no-repeat;
           background-position: center center;
           width: 100%;
+          font-size: 12px;
         }
 }
 
@@ -178,6 +172,7 @@
           background-repeat: no-repeat;
           background-position: center center;
           width: 100%;
+          font-size: 24px;
         }
 }
 
@@ -278,7 +273,7 @@
           <div class="modal-body p-0">
             <div class="container-fluid">
               <div class="row" >
-                <div class="col-md-8 p-4 offset-md-2">
+                <div class="col-md-8 offset-2 table-responsive">
                   <table class="table table-borderless">
                     <tr>
                       <th>Name:</th>
@@ -311,11 +306,6 @@
         </div>
       </div>
     </div>
-
-
-
-
-
 
   <!-- Query Results -->
   <div class="col">
