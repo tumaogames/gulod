@@ -43,22 +43,22 @@
                             echo '<div class="row mt-4 mb-1">';
                             echo '<div class="col-2 custom-col"><p></p></div>';
                             echo '<div class="col-3 custom-col px-1"><p>Voter Name:</p></div>';
-                            echo '<div class="col-6 custom-col"><span class="styled-data py-0">' . $voterInfo['voters_name'] . '</span></div>';
+                            echo '<div class="col-6 custom-col"><span class="py-0">' . $voterInfo['voters_name'] . '</span></div>';
                             echo '</div>';
                             echo '<div class="row mb-1">';
                             echo '<div class="col-2 custom-col"><p></p></div>';
                             echo '<div class="col-3 custom-col px-1"><p>Address:</p></div>';
-                            echo '<div class="col-6 custom-col"><span class="styled-data py-0">' . $voterInfo['address'] . '</span></div>';
+                            echo '<div class="col-6 custom-col"><span class="py-0">' . $voterInfo['address'] . '</span></div>';
                             echo '</div>';
                             echo '<div class="row mb-1">';
                             echo '<div class="col-2 custom-col"><p></p></div>';
                             echo '<div class="col-3 custom-col px-1"><p>Precinct No:</p></div>';
-                            echo '<div class="col-6 custom-col"><span class="styled-data py-0">' . $voterInfo['precinct_no'] . '</span></div>';
+                            echo '<div class="col-6 custom-col"><span class="py-0">' . $voterInfo['precinct_no'] . '</span></div>';
                             echo '</div>';
                             echo '<div class="row mb-1">';
                             echo '<div class="col-2 custom-col"><p></p></div>';
                             echo '<div class="col-3 custom-col px-1"><p>Clustered Precinct:</p></div>';
-                            echo '<div class="col-6 custom-col"><span class="styled-data py-0">' . $voterInfo['clustered_precinct'] . '</span></div>';
+                            echo '<div class="col-6 custom-col"><span class="py-0">' . $voterInfo['clustered_precinct'] . '</span></div>';
                             echo '</div>';
                             // ... Display other voter information ...
                         } else {
