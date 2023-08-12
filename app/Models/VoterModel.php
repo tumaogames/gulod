@@ -110,4 +110,9 @@ class VoterModel extends Model
     {
         return $this->where('clustered_precinct', $clusteredPrecinct)->countAllResults();
     }
+
+    public function getVoterById($voterId)
+    {
+        return $this->find($voterId);
+    }
 }

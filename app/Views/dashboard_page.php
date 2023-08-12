@@ -6,11 +6,8 @@
     <title>Modern Dashboard with Bootstrap</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="http://localhost:8080/assets/mystyle.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-        }
 
         /* Sidebar styles */
         .sidebar {
@@ -189,6 +186,7 @@
         <a href="#" data-content="analytics">Analytics</a>
         <a href="#" data-content="exel">Upload Exel</a>
         <a href="#" data-content="settings">Settings</a>
+        <a href="#" data-content="print">Print</a>
     </div>
 
     <!-- Main Content -->
@@ -224,7 +222,37 @@
             <h1>Settings Page</h1>
             <p>Content for Settings page goes here.</p>
         </div>
+        <div id="print" class="content-section">
+                <div class="container">
+                <div class="row">
+                    <div class="column"></div>
+                    <div class="column"></div>
+                </div>
+                <div class="row">
+                    <div class="column"></div>
+                    <div class="column"></div>
+                </div>
+                <div class="row">
+                    <div class="column"></div>
+                    <div class="column"></div>
+                </div>
+                <div class="row">
+                    <div class="column"></div>
+                    <div class="column"></div>
+                </div>
+                <button id="printButton">Print</button>
+            </div>
+        </div>
     </div>
+
+    
+    
+    <script>
+        const printButton = document.getElementById('printButton');
+        printButton.addEventListener('click', () => {
+            window.print();
+        });
+    </script>
 
     <!-- Footer -->
 			<footer class="footer bg-light mt-4">

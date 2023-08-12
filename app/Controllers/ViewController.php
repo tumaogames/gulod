@@ -21,5 +21,9 @@ class ViewController extends BaseController
     public function showDashboardPage(){
         return view('dashboard_page');
     }
+
+    public function print(){
+        return view('print');
+    }
 }
 

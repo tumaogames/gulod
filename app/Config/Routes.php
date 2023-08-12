@@ -38,6 +38,7 @@ $routes->post('register_user', 'AuthController::register');
 $routes->post('login_user', 'AuthController::login');
 $routes->add('success_page', 'ViewController::showSuccessPage');
 $routes->add('dashboard_page', 'ViewController::showDashboardPage');
+$routes->add('print', 'ViewController::print');
 $routes->post('excel', 'ExcelController::upload');
 
 /*

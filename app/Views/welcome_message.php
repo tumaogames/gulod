@@ -180,7 +180,6 @@
   
   /* Custom CSS for styling data fields */
   .styled-data {
-
     padding: 5px;
     border: 2px solid #007bff; /* Replace with your desired border color */
     border-radius: 5px; /* Adjust the value for rounded edges */
