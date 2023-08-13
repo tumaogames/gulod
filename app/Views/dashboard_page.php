@@ -223,24 +223,9 @@
             <p>Content for Settings page goes here.</p>
         </div>
         <div id="print" class="content-section">
-                <div class="container">
-                <div class="row">
-                    <div class="column"></div>
-                    <div class="column"></div>
-                </div>
-                <div class="row">
-                    <div class="column"></div>
-                    <div class="column"></div>
-                </div>
-                <div class="row">
-                    <div class="column"></div>
-                    <div class="column"></div>
-                </div>
-                <div class="row">
-                    <div class="column"></div>
-                    <div class="column"></div>
-                </div>
-                <button id="printButton">Print</button>
+            <?php
+            echo ini_get('max_execution_time');
+            ?>
             </div>
         </div>
     </div>

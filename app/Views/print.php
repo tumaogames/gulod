@@ -42,7 +42,7 @@
                         if ($voterInfo !== null) {
                             echo '<div class="row mt-4 mb-1">';
                             echo '<div class="col-2 custom-col"><p></p></div>';
-                            echo '<div class="col-3 custom-col px-1"><p>Voter Name:</p></div>';
+                            echo '<div class="col-3 custom-col px-1"><p>Name:</p></div>';
                             echo '<div class="col-6 custom-col"><span class="py-0" style="font-weight: bold">' . $voterInfo['voters_name'] . '</span></div>';
                             echo '</div>';
                             echo '<div class="row mb-1">';
@@ -57,7 +57,7 @@
                             echo '</div>';
                             echo '<div class="row mb-1">';
                             echo '<div class="col-2 custom-col"><p></p></div>';
-                            echo '<div class="col-3 custom-col px-1"><p>Clustered:</p></div>';
+                            echo '<div class="col-3 custom-col px-1"><p>Cluster:</p></div>';
                             echo '<div class="col-6 custom-col"><span class="py-0" style="font-weight: bold">' . $voterInfo['clustered_precinct'] . '</span></div>';
                             echo '</div>';
                             // ... Display other voter information ...

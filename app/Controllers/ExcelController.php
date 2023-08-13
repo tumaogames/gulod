@@ -53,7 +53,7 @@ class ExcelController extends Controller {
             // For example, you can perform calculations, etc.
 
             // For this example, we'll just echo the data
-            echo "finished";
+            //echo "finished";
         }
     } else {
         echo 'Invalid file format. Only .xlsx files are allowed.';
