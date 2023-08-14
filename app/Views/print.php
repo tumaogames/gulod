@@ -21,7 +21,7 @@
         ini_set('display_startup_errors', 1);
         error_reporting(E_ALL);
         use App\Models\VoterModel; // Load the VoterModel class
-        // Assuming $voterModel is your instance of VoterModel
+        // Assuming $voterModel is your instance of VoterMode
         $voterModel = new VoterModel();
         if (isset($_GET['voterRange'])) {
             $voterRange = $_GET['voterRange'];
