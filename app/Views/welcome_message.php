@@ -108,6 +108,14 @@
           font-size: 8px;
           padding: 0;
         }
+
+    .table {
+      font-size: 9px; /* Adjust this value to your preference */
+    }
+    
+    .table a{
+      font-size: 9px; /* Adjust this value to your preference */
+    }
 }
 
 /* Media Query for screens with a minimum width of 577px and a maximum width of 768px */
