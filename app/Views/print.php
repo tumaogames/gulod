@@ -67,6 +67,7 @@
                             // ... Display other voter information ...
                         } else {
                             echo '<p>Voter not found.</p>';
+                            break;
                         }
                         echo '</div>';
 

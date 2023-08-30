@@ -382,6 +382,21 @@ ini_set('display_errors', 1);
                 sidebar.classList.toggle("inactive");
             }
         });
+
+        function resetInputFields(tabId) {
+        const inputs = document.querySelectorAll(`#${tabId} input`);
+        inputs.forEach(input => {
+            input.value = ''; // Clear the input value
+        });
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // Add event listeners to tab toggling
+            $('[data-toggle="tab"]').on('shown.bs.tab', function(event) {
+                const targetTabId = $(event.target).attr('href').slice(1); // Get the tab ID
+                resetInputFields(targetTabId); // Reset input fields of the target tab
+            });
+        });
     </script>
 </body>
 </html>
