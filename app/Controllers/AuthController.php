@@ -140,7 +140,7 @@ class AuthController extends Controller
         $session->destroy();
 
         // Redirect the user to the login page or another appropriate page.
-        return redirect()->to('/admin_login');
+        return view('/admin_login');
     }
 }
 
