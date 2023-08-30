@@ -19,7 +19,7 @@ body {
   box-sizing: border-box;
   float: left;
   margin-right: 10px;
-  background-image: url("https://unligames.com/gulod/images/Card.png"); /* Replace with your image URL */
+  background-image: url("https://unligames.com/gulod/images/Card.png"); /* Replace with your image URL. */
   background-size: cover;
 }
 
