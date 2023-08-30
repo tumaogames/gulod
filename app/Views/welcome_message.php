@@ -220,7 +220,7 @@
             error_reporting(E_ALL);
             ini_set('display_errors', 1);
 
-            use App\Models\VoterModel; // Load the VotersModel
+            use App\Models\VoterModel; // Load the VotersModel.
 
             $totalPages = 0;
             $votersName = isset($_GET['votersName']) ? $_GET['votersName'] : '';
