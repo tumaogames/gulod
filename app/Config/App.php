@@ -23,7 +23,8 @@ class App extends BaseConfig
      *
      * @var string
      */
-    public $baseURL = 'http://localhost:8080/gulod/';
+    public $baseURL = 'https://unligames.com/gulod';
+    //public $baseURL = 'http://localhost:8080';
 
     /**
      * --------------------------------------------------------------------------

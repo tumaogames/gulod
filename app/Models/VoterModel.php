@@ -1,8 +1,10 @@
 <?php
 
 namespace App\Models;
-
 use CodeIgniter\Model;
+use CodeIgniter\Controller;
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 class VoterModel extends Model
 {
@@ -27,14 +29,19 @@ class VoterModel extends Model
     {
         // Check if $votersName is a valid string before proceeding
         if ($votersName !== null && is_string($votersName)) {
+            // Trim leading and trailing spaces
+            $votersName = trim($votersName);
+
+            // Check if the input is not excessively long
+            if (strlen($votersName) > 255) {
+                return [];
+            } 
             // Convert the search term to lowercase
             $votersName = strtolower($votersName);
             // Remove any commas from the search term
             $votersName = str_replace(',', '', $votersName);
-    
             // Explode the search term into an array of words
             $nameParts = explode(' ', $votersName);
-    
             // Use the Query Builder to perform an exact match search
             $query = $this->db->table('gulod'); // Replace 'gulod' with your actual table name
     
@@ -73,8 +80,16 @@ class VoterModel extends Model
         }
     }
     
-    
-    
+    public function getVotersByAddress($address, $index)
+    {
+        $rows = $this->like('address', $address)->orderBy('address', 'asc')->findAll();
+
+        if ($index >= 0 && $index < count($rows)) {
+            return $rows[$index];
+        } else {
+            return null; // Handle an invalid index
+        }
+    }
 
     public function getVotersByPrecinct($precinctNo)
     {
@@ -89,11 +104,6 @@ class VoterModel extends Model
     public function updateVoter($voterId, $data)
     {
         return $this->update($voterId, $data);
-    }
-
-    public function deleteVoter($voterId)
-    {
-        return $this->delete($voterId);
     }
 
     public function countAllVoters()

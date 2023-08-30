@@ -23,7 +23,7 @@
         <div class="row justify-content-center p-5">
             <div class="col-md-4">
                 <h2 class="text-center mb-4">Admin Panel Login.</h2>
-                <form id="loginForm" method="post" action="/login_user">
+                <form id="loginForm" method="post" action="<?= base_url() ?>/login_user">
                     <?= csrf_field() ?>
                     <div class="form-group">
                         <label for="username">Username</label>
@@ -33,7 +33,7 @@
                         <label for="password">Password</label>
                         <input type="password" class="form-control" id="password" name="password" required>
                     </div>
-                    <div><a href="/admin_register">Register</a></div>
+                    <div><a href="<?= base_url() ?>/admin_register">Register</a></div>
                     <button type="submit" class="btn btn-primary btn-block">Login</button>
                 </form>
             </div>
@@ -44,5 +44,4 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="script.js"></script>
 </body>
-
 </html>

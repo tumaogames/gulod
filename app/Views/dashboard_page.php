@@ -1,3 +1,7 @@
+<?php 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +10,6 @@
     <title>Modern Dashboard with Bootstrap</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="http://localhost:8080/assets/mystyle.css">
     <style>
 
         /* Sidebar styles */
@@ -160,11 +163,11 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-10">
-                    <h1 class="logo">Dashboard Logo</h1>
+                    <h3 class="logo text-white">Welcome, <?php echo $username; ?></h3>
                     <!-- Logout button -->
                 </div>
                 <div class="col-2">
-                <a href="/admin_login" class="logout">Logout</a>
+                <a href="<?= base_url() ?>/logout" class="logout">Logout</a>
                 </div>
             </div>
         </div>
@@ -206,32 +209,78 @@
         </div>
         <div id="exel" class="content-section" style="display:none;">
             <h1>Upload Exel</h1>
-            <p>uploading exel here.</p>
-            <form action="/excel" method="post" enctype="multipart/form-data">
-            <?= csrf_field() ?>
-            <label class="custom-file-upload">
-                Choose File
-                <input type="file" name="excel_file" accept=".xlsx, .xls">
-            </label>
-            <div class="upload-button">
-                <input type="submit" value="Upload" class="btn btn-primary">
-            </div>
-            </form>
+            <?php if ($role === 'admin' || $role === 'super_admin') : ?>
+                <p>uploading exel here.</p>
+                <form action="/excel" method="post" enctype="multipart/form-data">
+                <?= csrf_field() ?>
+                <label class="custom-file-upload">
+                    Choose File
+                    <input type="file" name="excel_file" accept=".xlsx, .xls">
+                </label>
+                <div class="upload-button">
+                    <input type="submit" value="Upload" class="btn btn-primary">
+                </div>
+                </form>
+            <?php endif; ?>
         </div>
         <div id="settings" class="content-section" style="display:none;">
-            <h1>Settings Page</h1>
-            <p>Content for Settings page goes here.</p>
+            <h1>Maintenance Mode Toggle</h1>
         </div>
-        <div id="print" class="content-section">
-            <?php
-            echo ini_get('max_execution_time');
-            ?>
+        
+        <div id="print" class="content-section" style="display:none;">
+            <div class="mt-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                    <div class="card">
+                            <div class="card-header">
+                                <ul class="nav nav-tabs card-header-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="tab" href="#tab1">Front Card</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" href="#tab2">Back Card</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="tab1">
+                                        <h5 class="card-title">Print front of the card</h5>
+                                        <p class="card-text">Enter details</p>
+                                        <h2 class="pb-2">Print Card</h2>
+                                        <div class="card p-4">
+                                            <div class="mb-3">
+                                            <label for="rangeInput" class="form-label">Enter Voter Range:</label>
+                                            <input type="text" class="form-control" id="rangeInput">
+                                            </div>
+                                            <div class="mb-3">
+                                            <label for="address" class="form-label">Enter Address:</label>
+                                            <input type="text" class="form-control" id="address">
+                                            </div>
+                                            <button class="btn btn-primary" onclick="generateLink()">Generate Card</button>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="tab2">
+                                        <h5 class="card-title">Print back of the card</h5>
+                                        <p class="card-text">Enter details</p>
+                                        <h2 class="pb-2">Print Card</h2>
+                                        <div class="card p-4">
+                                            <div class="mb-3">
+                                            <label for="rangeInputBack" class="form-label">Enter Voter Range:</label>
+                                            <input type="text" class="form-control" id="rangeInputBack">
+                                            </div>
+                                            <button class="btn btn-primary" onclick="generateLink()">Generate Card</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    
-    
     <script>
         const printButton = document.getElementById('printButton');
         printButton.addEventListener('click', () => {
@@ -240,19 +289,64 @@
     </script>
 
     <!-- Footer -->
-			<footer class="footer bg-light mt-4">
-			<div class="container text-center">
-				<span class="text-muted"
-				>Search Landing &copy; 2023. All rights reserved.</span
-				>
-			
-	</div>
+	<footer class="footer bg-light mt-4">
+		<div class="container text-center">
+			<span class="text-muted">Search Landing &copy; 2023. All rights reserved.</span>
+        </div>
     </footer>
 
     <!-- Bootstrap JS and Font Awesome (required for hamburger menu icon) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
     <script>
+        function generateLink() {
+            var rangeInput = document.getElementById('rangeInput').value;
+            var rangeInputBack = document.getElementById('rangeInputBack').value;
+            var address = document.getElementById('address').value;
+            var rangeArray = rangeInput.split('-');
+            var rangeArrayBack = rangeInputBack.split('-');
+            
+            if (rangeArrayBack.length === 2 && rangeInputBack !== null) {
+                var start = parseInt(rangeArrayBack[0]);
+                var end = parseInt(rangeArrayBack[1]);
+                
+                if (!isNaN(start) && !isNaN(end) && start <= end) {
+                var link = '<?= base_url() ?>/print_back?voterRange=' + start + '-' + end + '&address=' + address;
+                window.open(link, '_blank');
+                } else {
+                alert('Invalid range input. Please enter a valid range.');
+                }
+            } else if (rangeArray.length === 2 && rangeInput !== null){
+                var start = parseInt(rangeArray[0]);
+                var end = parseInt(rangeArray[1]);
+                
+                if (!isNaN(start) && !isNaN(end) && start <= end) {
+                var link = '<?= base_url() ?>/print?voterRange=' + start + '-' + end + '&address=' + address;
+                window.open(link, '_blank');
+                } else {
+                alert('Invalid range input. Please enter a valid range.');
+                }
+            } else {
+                alert('Invalid range input format. Please use the format "1-infinity".');
+            }
+
+            
+            if (rangeArray.length === 2 && rangeInput !== null) {
+                var start = parseInt(rangeArray[0]);
+                var end = parseInt(rangeArray[1]);
+                
+                if (!isNaN(start) && !isNaN(end) && start <= end) {
+                var link = '<?= base_url() ?>/print?voterRange=' + start + '-' + end + '&address=' + address;
+                window.open(link, '_blank');
+                } else {
+                alert('Invalid range input. Please enter a valid range.');
+                }
+            } else {
+                alert('Invalid range input format. Please use the format "1-infinity".');
+            }
+        }
         // JavaScript to handle sidebar menu click events
         document.addEventListener("DOMContentLoaded", function () {
             const sidebarLinks = document.querySelectorAll(".sidebar a");

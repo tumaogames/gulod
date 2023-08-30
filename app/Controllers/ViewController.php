@@ -1,6 +1,8 @@
 <?php
 
+
 namespace App\Controllers;
+use App\Filters\AuthFilter;
 
 class ViewController extends BaseController
 {
@@ -25,5 +27,9 @@ class ViewController extends BaseController
     public function print(){
         return view('print');
     }
+    public function print_back(){
+        return view('print_back');
+    }
 }
+
 

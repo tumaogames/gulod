@@ -11,7 +11,7 @@ class UserModel extends Model
     protected $primaryKey = 'id';
 
     // Fields that are allowed to be updated in the database using the 'save()' method.
-    protected $allowedFields = ['username', 'email', 'password', 'full_name', 'date_of_birth', 'created_at', 'updates_at'];
+    protected $allowedFields = ['username', 'email', 'password', 'full_name', 'date_of_birth', 'created_at', 'updated_at'];
 
     // Validation rules for inserting or updating a user record.
     // Note: These rules are for creating new users and should not be used for the login process.

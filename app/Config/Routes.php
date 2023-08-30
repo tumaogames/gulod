@@ -2,8 +2,6 @@
 
 namespace Config;
 
-// app/Config/Routes.php
-
 use App\Controllers\MaintenanceMode;
 
 // Create a new instance of our RouteCollection class.
@@ -21,12 +19,11 @@ if (file_exists(SYSTEMPATH . 'Config/Routes.php')) {
  * --------------------------------------------------------------------
  */
 $routes->setDefaultNamespace('App\Controllers');
+$routes->setDefaultController('Home');
 $routes->setDefaultMethod('index');
 $routes->setTranslateURIDashes(false);
 $routes->set404Override();
 $routes->setAutoRoute(true);
-
-
 
 /*
  * --------------------------------------------------------------------
@@ -36,14 +33,15 @@ $routes->setAutoRoute(true);
 
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
-
 $routes->get('admin_login', 'ViewController::showLoginPage');
+$routes->get('logout', 'AuthController::logout');
 $routes->get('admin_register', 'ViewController::showRegistrationPage');
 $routes->post('register_user', 'AuthController::register');
 $routes->post('login_user', 'AuthController::login');
 $routes->add('success_page', 'ViewController::showSuccessPage');
-$routes->add('dashboard_page', 'ViewController::showDashboardPage');
-$routes->post('excel', 'ExcelController::upload');
+$routes->add('dashboard_page', 'ViewController::showDashboardPage', ['filter' => 'auth']);
+$routes->add('set', 'Home::set');
+$routes->post('excel', 'ExcelController::upload', ['filter' => 'auth']);
 // Add the maintenance mode route
 if (config('MaintenanceMode')->enabled) {
     $routes->setDefaultController(MaintenanceMode::class);
@@ -52,9 +50,9 @@ if (config('MaintenanceMode')->enabled) {
 } else {
     $routes->setDefaultController('Home');
     $routes->get('/', 'Home::index');
-    $routes->add('print', 'ViewController::print');
+    $routes->add('/print', 'ViewController::print', ['filter' => 'auth']);
+    $routes->add('/print_back', 'ViewController::print_back', ['filter' => 'auth']);
 }
-
 
 /*
  * --------------------------------------------------------------------
