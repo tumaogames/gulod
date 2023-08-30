@@ -24,6 +24,7 @@
         // Assuming $voterModel is your instance of VoterMode
         $voterModel = new VoterModel();
         if (isset($_GET['voterRange'])) {
+            $address = $_GET['address'];
             $voterRange = $_GET['voterRange'];
             $voterIds = range(1, 8);
             
@@ -35,8 +36,11 @@
                 
                 if ($startId >= $rangeParts[0] && $endId <= $rangeParts[1] && $startId <= $endId) {
                     for ($voterId = $startId; $voterId <= $endId; $voterId++) {
-                        $voterInfo = $voterModel->getVoterById($voterId);
-    
+                        if($address && $address !== null){
+                            $voterInfo = $voterModel->getVotersByAddress($address, $voterId);
+                        } else {
+                            $voterInfo = $voterModel->getVoterById($voterId);
+                        }
                         echo '<div class="row">';
                         echo '<div class="column bg-primary px-4">';
                         if ($voterInfo !== null) {

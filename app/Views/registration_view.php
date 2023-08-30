@@ -50,7 +50,7 @@
                         <label for="date_of_birth">Date of Birth</label>
                         <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" required value="<?php old('date_of_birth') ?>">
                     </div>
-                    <div><a href="<?= base_url() ?>/login_user">Login</a></div>
+                    <div><a href="<?= base_url() ?>/admin_login">Login</a></div>
                     <button type="submit" class="btn btn-primary btn-block">Register</button>
                 </form>
             </div>
