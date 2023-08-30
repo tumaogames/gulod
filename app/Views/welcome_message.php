@@ -211,7 +211,7 @@
         <div class="row justify-content-center">
           <div class="col-12"><!-- Navigation bar -->
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
-              <a class="navbar-brand" href="#"><h1>Barangay Gulod</h1></a>
+              <a class="navbar-brand" href="#"><h3>Barangay Gulod</h3></a>
               <!-- Add additional navigation items if needed -->
             </nav>
           </div>
@@ -238,7 +238,7 @@
             ?>
               <div class="search-container">
                 <div class="p-5">
-                  <h1>Barangay Voters List System</h1>
+                  <h2>Barangay Voters List System</h2>
                 </div>
                 <div class="search-box mb-4">
                   <form action="<?= $_SERVER['REQUEST_URI']; ?>" method="get">
