@@ -308,7 +308,7 @@ ini_set('display_errors', 1);
             var rangeArray = rangeInput.split('-');
             var rangeArrayBack = rangeInputBack.split('-');
             
-            if (rangeArrayBack.length === 2 && rangeInputBack !== null) {
+            if (rangeArrayBack.length === 2 && rangeInputBack !== '' && address == null) {
                 var start = parseInt(rangeArrayBack[0]);
                 var end = parseInt(rangeArrayBack[1]);
                 
@@ -318,7 +318,7 @@ ini_set('display_errors', 1);
                 } else {
                 alert('Invalid range input. Please enter a valid range.');
                 }
-            } else if (rangeArray.length === 2 && rangeInput !== null){
+            } else if (rangeArray.length === 2 && rangeInput !== ''){
                 var start = parseInt(rangeArray[0]);
                 var end = parseInt(rangeArray[1]);
                 

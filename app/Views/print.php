@@ -27,7 +27,9 @@
             $address = $_GET['address'];
             $voterRange = $_GET['voterRange'];
             $voterIds = range(1, 8);
-            
+            if($address && $address !== null){
+                $voterInfoAddress = $voterModel->getVotersByAddress($address);
+            }
             $rangeParts = explode('-', $voterRange);
             
             if (count($rangeParts) === 2 && is_numeric($rangeParts[0]) && is_numeric($rangeParts[1])) {
@@ -37,7 +39,11 @@
                 if ($startId >= $rangeParts[0] && $endId <= $rangeParts[1] && $startId <= $endId) {
                     for ($voterId = $startId; $voterId <= $endId; $voterId++) {
                         if($address && $address !== null){
-                            $voterInfo = $voterModel->getVotersByAddress($address, $voterId);
+                            if ($voterId >= 0 && $voterId < count($voterInfoAddress)) {
+                                $voterInfo = $voterInfoAddress[$voterId];
+                            } else {
+                                $voterInfo = null; // Handle an invalid index
+                            }
                         } else {
                             $voterInfo = $voterModel->getVoterById($voterId);
                         }

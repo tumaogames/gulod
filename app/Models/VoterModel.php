@@ -80,15 +80,9 @@ class VoterModel extends Model
         }
     }
     
-    public function getVotersByAddress($address, $index)
+    public function getVotersByAddress($address)
     {
-        $rows = $this->like('address', $address)->orderBy('address', 'asc')->findAll();
-
-        if ($index >= 0 && $index < count($rows)) {
-            return $rows[$index];
-        } else {
-            return null; // Handle an invalid index
-        }
+        return $this->like('address', $address)->orderBy('address', 'asc')->findAll();
     }
 
     public function getVotersByPrecinct($precinctNo)
